@@ -5,18 +5,18 @@ import PackageDescription
 
 // swiftlint:disable all
 let package = Package(
-    name: "Spark___COMPONENT_NAME___",
+    name: "SparkSnackbar",
     platforms: [
         .iOS(.v15)
     ],
     products: [
         .library(
-            name: "Spark___COMPONENT_NAME___",
-            targets: ["Spark___COMPONENT_NAME___"]
+            name: "SparkSnackbar",
+            targets: ["SparkSnackbar"]
         ),
         .library(
-            name: "Spark___COMPONENT_NAME___Testing",
-            targets: ["Spark___COMPONENT_NAME___Testing"]
+            name: "SparkSnackbarTesting",
+            targets: ["SparkSnackbarTesting"]
         )
     ],
     dependencies: [
@@ -33,7 +33,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Spark___COMPONENT_NAME___",
+            name: "SparkSnackbar",
             dependencies: [
                 .product(
                     name: "SparkCommon",
@@ -47,9 +47,9 @@ let package = Package(
             path: "Sources/Core"
         ),
         .target(
-            name: "Spark___COMPONENT_NAME___Testing",
+            name: "SparkSnackbarTesting",
             dependencies: [
-                "Spark___COMPONENT_NAME___",
+                "SparkSnackbar",
                 .product(
                     name: "SparkCommon",
                     package: "spark-ios-common"
@@ -70,10 +70,10 @@ let package = Package(
             path: "Sources/Testing"
         ),
         .testTarget(
-            name: "Spark___COMPONENT_NAME___UnitTests",
+            name: "SparkSnackbarUnitTests",
             dependencies: [
-                "Spark___COMPONENT_NAME___",
-                "Spark___COMPONENT_NAME___Testing",
+                "SparkSnackbar",
+                "SparkSnackbarTesting",
                 .product(
                     name: "SparkCommonTesting",
                     package: "spark-ios-common"
@@ -85,17 +85,17 @@ let package = Package(
             ],
             path: "Tests/UnitTests"
         ),
-        .testTarget(
-            name: "Spark___COMPONENT_NAME___SnapshotTests",
-            dependencies: [
-                "Spark___COMPONENT_NAME___",
-                "Spark___COMPONENT_NAME___Testing",
-                .product(
-                    name: "SparkCommonSnapshotTesting",
-                    package: "spark-ios-common"
-                ),
-            ],
-            path: "Tests/SnapshotTests"
-        ),
+//        .testTarget(
+//            name: "SparkSnackbarSnapshotTests",
+//            dependencies: [
+//                "SparkSnackbar",
+//                "SparkSnackbarTesting",
+//                .product(
+//                    name: "SparkCommonSnapshotTesting",
+//                    package: "spark-ios-common"
+//                ),
+//            ],
+//            path: "Tests/SnapshotTests"
+//        ),
     ]
 )

@@ -1,9 +1,9 @@
 //
-//  ___COMPONENT_NAME___Testing.swift
-//  Spark___COMPONENT_NAME___
+//  SnackbarTesting.swift
+//  SparkSnackbar
 //
-//  Created by ___USERNAME___ on ___CURRENT_DATE___.
-//  Copyright © ___CURRENT_YEAR___ Adevinta. All rights reserved.
+//  Created by louis.borlee on 03/09/2024.
+//  Copyright © 2024 Adevinta. All rights reserved.
 //
 
 import Foundation
