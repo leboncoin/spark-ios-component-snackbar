@@ -29,6 +29,7 @@ final class SnackbarViewModelTests: XCTestCase {
         self.publishers = .init(
             backgroundColor: PublisherMock(publisher: viewModel.$backgroundColor),
             foregroundColor: PublisherMock(publisher: viewModel.$foregroundColor),
+            textFont: PublisherMock(publisher: viewModel.$textFont),
             buttonIntent: PublisherMock(publisher: viewModel.$buttonIntent),
             buttonVariant: PublisherMock(publisher: viewModel.$buttonVariant)
         )
@@ -73,6 +74,9 @@ final class SnackbarViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.backgroundColor.equals(expectedBackgroundColor), "Wrong background color")
         XCTAssertTrue(viewModel.foregroundColor.equals(expectedForegroundColor), "Wrong foreground color")
 
+        let expectedFont = try XCTUnwrap(self.theme.typography.body2 as? TypographyFontTokenGeneratedMock, "Couldn't unwrap expectedFont")
+        XCTAssertIdentical(viewModel.textFont as? TypographyFontTokenGeneratedMock, expectedFont, "Wrong textFont")
+
         XCTAssertEqual(viewModel.buttonIntent, expectedButtonIntent, "Wrong button intent")
         XCTAssertEqual(viewModel.buttonVariant, expectedButtonVariant, "Wrong button variant")
 
@@ -98,6 +102,7 @@ final class SnackbarViewModelTests: XCTestCase {
         // THEN - Publishers
         XCTAssertEqual(self.publishers.backgroundColor.sinkCount, 1, "$backgroundColor should have been called once")
         XCTAssertEqual(self.publishers.foregroundColor.sinkCount, 1, "$foregroundColor should have been called once")
+        XCTAssertEqual(self.publishers.textFont.sinkCount, 1, "$textFont should have been called once")
         XCTAssertEqual(self.publishers.buttonIntent.sinkCount, 1, "$buttonIntent should have been called once")
         XCTAssertEqual(self.publishers.buttonVariant.sinkCount, 1, "$buttonVariant should have been called once")
     }
@@ -148,6 +153,9 @@ final class SnackbarViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.backgroundColor.equals(expectedBackgroundColor), "Wrong background color")
         XCTAssertTrue(viewModel.foregroundColor.equals(expectedForegroundColor), "Wrong foreground color")
 
+        let expectedFont = try XCTUnwrap(newTheme.typography.body2 as? TypographyFontTokenGeneratedMock, "Couldn't unwrap expectedFont")
+        XCTAssertIdentical(viewModel.textFont as? TypographyFontTokenGeneratedMock, expectedFont, "Wrong textFont")
+
         XCTAssertEqual(viewModel.buttonIntent, expectedButtonIntent, "Wrong button intent")
         XCTAssertEqual(viewModel.buttonVariant, expectedButtonVariant, "Wrong button variant")
 
@@ -173,6 +181,7 @@ final class SnackbarViewModelTests: XCTestCase {
         // THEN - Publishers
         XCTAssertEqual(self.publishers.backgroundColor.sinkCount, 1, "$backgroundColor should have been called once")
         XCTAssertEqual(self.publishers.foregroundColor.sinkCount, 1, "$foregroundColor should have been called once")
+        XCTAssertEqual(self.publishers.textFont.sinkCount, 1, "$textFont should have been called once")
         XCTAssertEqual(self.publishers.buttonIntent.sinkCount, 1, "$buttonIntent should have been called once")
         XCTAssertEqual(self.publishers.buttonVariant.sinkCount, 1, "$buttonVariant should have been called once")
     }
@@ -248,6 +257,7 @@ final class SnackbarViewModelTests: XCTestCase {
         // THEN - Publishers
         XCTAssertEqual(self.publishers.backgroundColor.sinkCount, 1, "$backgroundColor should have been called once")
         XCTAssertEqual(self.publishers.foregroundColor.sinkCount, 1, "$foregroundColor should have been called once")
+        XCTAssertFalse(self.publishers.textFont.sinkCalled, "$textFont should not have been called once")
         XCTAssertEqual(self.publishers.buttonIntent.sinkCount, 1, "$buttonIntent should have been called once")
         XCTAssertEqual(self.publishers.buttonVariant.sinkCount, 1, "$buttonVariant should have been called once")
     }
@@ -295,6 +305,7 @@ final class SnackbarViewModelTests: XCTestCase {
         // THEN - Publishers
         XCTAssertFalse(self.publishers.backgroundColor.sinkCalled, "$backgroundColor should not have been called")
         XCTAssertFalse(self.publishers.foregroundColor.sinkCalled, "$foregroundColor should not have been called")
+        XCTAssertFalse(self.publishers.textFont.sinkCalled, "$textFont should not have been called once")
         XCTAssertFalse(self.publishers.buttonIntent.sinkCalled, "$buttonIntent should not have been called")
         XCTAssertFalse(self.publishers.buttonVariant.sinkCalled, "$buttonVariant should not have been called")
     }
@@ -370,6 +381,7 @@ final class SnackbarViewModelTests: XCTestCase {
         // THEN - Publishers
         XCTAssertEqual(self.publishers.backgroundColor.sinkCount, 1, "$backgroundColor should have been called once")
         XCTAssertEqual(self.publishers.foregroundColor.sinkCount, 1, "$foregroundColor should have been called once")
+        XCTAssertFalse(self.publishers.textFont.sinkCalled, "$textFont should not have been called once")
         XCTAssertEqual(self.publishers.buttonIntent.sinkCount, 1, "$buttonIntent should have been called once")
         XCTAssertEqual(self.publishers.buttonVariant.sinkCount, 1, "$buttonVariant should have been called once")
     }
@@ -417,6 +429,7 @@ final class SnackbarViewModelTests: XCTestCase {
         // THEN - Publishers
         XCTAssertFalse(self.publishers.backgroundColor.sinkCalled, "$backgroundColor should not have been called")
         XCTAssertFalse(self.publishers.foregroundColor.sinkCalled, "$foregroundColor should not have been called")
+        XCTAssertFalse(self.publishers.textFont.sinkCalled, "$textFont should not have been called once")
         XCTAssertFalse(self.publishers.buttonIntent.sinkCalled, "$buttonIntent should not have been called")
         XCTAssertFalse(self.publishers.buttonVariant.sinkCalled, "$buttonVariant should not have been called")
     }
@@ -427,6 +440,7 @@ final class SnackbarPublishers {
 
     var backgroundColor: PublisherMock<Published<any ColorToken>.Publisher>
     var foregroundColor: PublisherMock<Published<any ColorToken>.Publisher>
+    var textFont: PublisherMock<Published<any TypographyFontToken>.Publisher>
     var buttonIntent: PublisherMock<Published<ButtonIntent>.Publisher>
     var buttonVariant: PublisherMock<Published<ButtonVariant>.Publisher>
 
@@ -434,12 +448,14 @@ final class SnackbarPublishers {
         cancellables: Set<AnyCancellable> = Set<AnyCancellable>(),
         backgroundColor: PublisherMock<Published<any ColorToken>.Publisher>,
         foregroundColor: PublisherMock<Published<any ColorToken>.Publisher>,
+        textFont: PublisherMock<Published<any TypographyFontToken>.Publisher>,
         buttonIntent: PublisherMock<Published<ButtonIntent>.Publisher>,
         buttonVariant: PublisherMock<Published<ButtonVariant>.Publisher>
     ) {
         self.cancellables = cancellables
         self.backgroundColor = backgroundColor
         self.foregroundColor = foregroundColor
+        self.textFont = textFont
         self.buttonIntent = buttonIntent
         self.buttonVariant = buttonVariant
     }
@@ -449,6 +465,7 @@ final class SnackbarPublishers {
 
         self.foregroundColor.loadTesting(on: &self.cancellables)
         self.backgroundColor.loadTesting(on: &self.cancellables)
+        self.textFont.loadTesting(on: &self.cancellables)
         self.buttonIntent.loadTesting(on: &self.cancellables)
         self.buttonVariant.loadTesting(on: &self.cancellables)
     }
@@ -456,6 +473,7 @@ final class SnackbarPublishers {
     func reset() {
         self.foregroundColor.reset()
         self.backgroundColor.reset()
+        self.textFont.reset()
         self.buttonIntent.reset()
         self.buttonVariant.reset()
     }
