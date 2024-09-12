@@ -15,6 +15,7 @@ final class SnackbarViewModel: ObservableObject {
     var theme: any Theme {
         didSet {
             self.refresh()
+            self.textFont = theme.typography.body2
         }
     }
     var variant: SnackbarVariant {
@@ -32,6 +33,9 @@ final class SnackbarViewModel: ObservableObject {
 
     @Published private(set) var backgroundColor: any ColorToken
     @Published private(set) var foregroundColor: any ColorToken
+
+    @Published private(set) var textFont: any TypographyFontToken
+
     @Published private(set) var buttonIntent: ButtonIntent
     @Published private(set) var buttonVariant: ButtonVariant
 
@@ -52,6 +56,8 @@ final class SnackbarViewModel: ObservableObject {
 
         self.getColorsUseCase = getColorsUseCase
         self.getButtonTypeUseCase = getButtonTypeUseCase
+
+        self.textFont = theme.typography.body2
 
         let colors = getColorsUseCase.execute(
             colors: theme.colors,
