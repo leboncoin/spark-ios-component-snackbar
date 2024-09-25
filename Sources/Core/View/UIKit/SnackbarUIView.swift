@@ -70,7 +70,7 @@ public final class SnackbarUIView: UIView {
 
     @ScaledUIMetric private var scaleFactor: CGFloat = 1.0
     private var cornerRadius: CGFloat {
-        return self.viewModel.theme.layout.spacing.medium * self.scaleFactor
+        return self.viewModel.cornerRadius * self.scaleFactor
     }
 
     private var imageViewWidthConstraint = NSLayoutConstraint()
@@ -272,6 +272,8 @@ public final class SnackbarUIView: UIView {
     }
 
     // MARK: - Set Image
+    /// Creates or removes the snackbar `imageView`.
+    /// - Parameter image: The image to add in the `imageView`. If nil, `imageView` will become nil.
     public func setImage(_ image: UIImage?) {
         if let image {
             if self.imageContainer == nil {

@@ -6,6 +6,7 @@
 //  Copyright © 2024 Adevinta. All rights reserved.
 //
 
+import Foundation
 import Combine
 import SparkTheming
 import SparkButton
@@ -15,7 +16,8 @@ final class SnackbarViewModel: ObservableObject {
     var theme: any Theme {
         didSet {
             self.refresh()
-            self.textFont = theme.typography.body2
+            self.textFont = self.theme.typography.body2
+            self.cornerRadius = self.theme.border.radius.medium
         }
     }
     var variant: SnackbarVariant {
@@ -38,6 +40,8 @@ final class SnackbarViewModel: ObservableObject {
 
     @Published private(set) var buttonIntent: ButtonIntent
     @Published private(set) var buttonVariant: ButtonVariant
+
+    @Published private(set) var cornerRadius: CGFloat
 
     private let getColorsUseCase: SnackbarGetColorsUseCasable
     private let getButtonTypeUseCase: SnackbarGetButtonTypeUseCasable
@@ -73,6 +77,8 @@ final class SnackbarViewModel: ObservableObject {
         )
         self.buttonIntent = buttonType.intent
         self.buttonVariant = buttonType.variant
+
+        self.cornerRadius = theme.border.radius.medium
     }
 
     private func refresh() {
