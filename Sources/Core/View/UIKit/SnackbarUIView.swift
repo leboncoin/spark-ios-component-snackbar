@@ -90,6 +90,8 @@ public final class SnackbarUIView: UIView {
             intent: intent
         )
 
+        self._cornerRadius = .init(wrappedValue: self.viewModel.theme.layout.spacing.medium)
+
         super.init(frame: .zero)
         self.setupView()
         self.setupVerticalStackViewLayout()
