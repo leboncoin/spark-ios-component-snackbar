@@ -53,9 +53,7 @@ public final class SnackbarUIView: UIView {
     }
 
     public private(set) var imageView: UIImageView?
-    private var iconSize: CGFloat {
-        return SnackbarConstants.iconSize * self.scaleFactor
-    }
+    @ScaledUIMetric private var iconSize = SnackbarConstants.iconSize
 
     public let label = UILabel()
     public private(set) var buttonView: ButtonUIView?
@@ -71,6 +69,9 @@ public final class SnackbarUIView: UIView {
     private var cancellables = Set<AnyCancellable>()
 
     @ScaledUIMetric private var scaleFactor: CGFloat = 1.0
+    private var cornerRadius: CGFloat {
+        return self.viewModel.cornerRadius * self.scaleFactor
+    }
 
     private var imageViewWidthConstraint = NSLayoutConstraint()
     private var labelTrailingAnchorConstraint = NSLayoutConstraint()
@@ -107,7 +108,7 @@ public final class SnackbarUIView: UIView {
         self.setupHorizontalStackView()
         self.setupVerticalStackView()
 
-        self.layer.cornerRadius = self.theme.border.radius.medium * self.scaleFactor
+        self.layer.cornerRadius = self.cornerRadius
 
         self.addSubview(self.verticalStackView)
 
@@ -271,6 +272,8 @@ public final class SnackbarUIView: UIView {
     }
 
     // MARK: - Set Image
+    /// Creates or removes the snackbar `imageView`.
+    /// - Parameter image: The image to add in the `imageView`. If nil, `imageView` will become nil.
     public func setImage(_ image: UIImage?) {
         if let image {
             if self.imageContainer == nil {
@@ -370,7 +373,7 @@ public final class SnackbarUIView: UIView {
         super.traitCollectionDidChange(previousTraitCollection)
         if self.traitCollection.hasDifferentSizeCategory(comparedTo: previousTraitCollection) {
             self.imageViewWidthConstraint.constant = self.iconSize
-            self.layer.cornerRadius = self.theme.border.radius.medium * self.scaleFactor
+            self.layer.cornerRadius = self.cornerRadius
         }
         if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             self.applyShadow(self.theme.elevation.dropShadow)
