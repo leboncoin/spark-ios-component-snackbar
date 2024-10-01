@@ -94,17 +94,17 @@ let package = Package(
             ],
             path: "Tests/UnitTests"
         ),
-//        .testTarget(
-//            name: "SparkSnackbarSnapshotTests",
-//            dependencies: [
-//                "SparkSnackbar",
-//                "SparkSnackbarTesting",
-//                .product(
-//                    name: "SparkCommonSnapshotTesting",
-//                    package: "spark-ios-common"
-//                ),
-//            ],
-//            path: "Tests/SnapshotTests"
-//        ),
+        .testTarget(
+            name: "SparkSnackbarSnapshotTests",
+            dependencies: [
+                "SparkSnackbar",
+                "SparkSnackbarTesting",
+                .product(
+                    name: "SparkCommonSnapshotTesting",
+                    package: "spark-ios-common"
+                ),
+            ],
+            path: "Tests/SnapshotTests"
+        )
     ]
 )
