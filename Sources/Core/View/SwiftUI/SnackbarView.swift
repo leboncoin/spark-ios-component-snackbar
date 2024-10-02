@@ -54,7 +54,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
             intent: intent
         )
         self.viewModel = viewModel
-        self._cornerRadius = .init(wrappedValue: viewModel.theme.layout.spacing.medium)
+        self._cornerRadius = .init(wrappedValue: viewModel.cornerRadius)
 
         self.image = image
         self.text = text
@@ -72,23 +72,29 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
             }
         } else if let button, let action {
             self.button = {
-               button(
-                   ButtonView(
-                       theme: viewModel.theme,
-                       intent: viewModel.buttonIntent,
-                       variant: viewModel.buttonVariant,
-                       size: SnackbarConstants.buttonSize,
-                       shape: SnackbarConstants.buttonShape,
-                       alignment: .leadingImage,
-                       action: action
-                   )
-               )
-           }
+                button(
+                    ButtonView(
+                        theme: viewModel.theme,
+                        intent: viewModel.buttonIntent,
+                        variant: viewModel.buttonVariant,
+                        size: SnackbarConstants.buttonSize,
+                        shape: SnackbarConstants.buttonShape,
+                        alignment: .leadingImage,
+                        action: action
+                    )
+                )
+            }
         } else {
             self.button = { nil }
         }
     }
 
+    /// Initialize a new divider view without button.
+    /// - Parameters:
+    ///   - theme: The spark theme of the snackbar.
+    ///   - intent: The intent of the snackbar.
+    ///   - image: The image of the snackbar. The default is ``nil``.
+    ///   - text: The text of the snackbar.
     public init(
         theme: any Theme,
         intent: SnackbarIntent,
@@ -105,6 +111,13 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         )
     }
 
+    /// Initialize a new divider view with a `SnackbarButton`.
+    /// - Parameters:
+    ///   - theme: The spark theme of the snackbar.
+    ///   - intent: The intent of the snackbar.
+    ///   - image: The image of the snackbar. The default is ``nil``.
+    ///   - text: The text of the snackbar.
+    ///   - button: The button builder. It has as a parameter the expected returned ButtonView's configuration.
     public init(
         theme: any Theme,
         intent: SnackbarIntent,
@@ -123,6 +136,14 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         )
     }
 
+    /// Initialize a new divider view with a `SnackbarButton`.
+    /// - Parameters:
+    ///   - theme: The spark theme of the snackbar.
+    ///   - intent: The intent of the snackbar.
+    ///   - image: The image of the snackbar. The default is ``nil``.
+    ///   - text: The text of the snackbar.
+    ///   - button: The button builder. It has as a parameter the expected returned ButtonView.
+    ///   - action: The button's action.
     public init(
         theme: any Theme,
         intent: SnackbarIntent,
@@ -222,23 +243,35 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
             .accessibilityIdentifier(SnackbarAccessibilityIdentifier.label)
     }
 
+    /// Snackbar's theme modifier.
+    /// - Parameter theme: The modified spark theme for the snackbar.
+    /// - Returns: The updated snackbar.
     public func theme(_ theme: any Theme) -> Self {
         self.viewModel.theme = theme
         return self
     }
 
+    /// Snackbar's intent modifier.
+    /// - Parameter intent: The modified intent for the snackbar.
+    /// - Returns: The updated snackbar.
     public func intent(_ intent: SnackbarIntent) -> Self {
         guard intent != self.viewModel.intent else { return self }
         self.viewModel.intent = intent
         return self
     }
 
+    /// Snackbar's variant modifier.
+    /// - Parameter variant: The modified variant for the snackbar.
+    /// - Returns: The updated snackbar.
     public func variant(_ variant: SnackbarVariant) -> Self {
         guard variant != self.viewModel.variant else { return self }
         self.viewModel.variant = variant
         return self
     }
 
+    /// Snackbar's type modifier.
+    /// - Parameter type: The modified type for the snackbar.
+    /// - Returns: The updated snackbar.
     public func type(_ type: SnackbarType) -> Self {
         guard type != self.type else { return self }
         var copy = self
