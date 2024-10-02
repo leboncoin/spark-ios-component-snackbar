@@ -6,7 +6,7 @@
 //  Copyright © 2024 Adevinta. All rights reserved.
 //
 
-/// The variant of the snackbar.
+/// The type of the snackbar.
 public enum SnackbarType: CaseIterable {
     case horizontal
     case vertical
