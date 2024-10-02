@@ -12,6 +12,7 @@ import SparkTheming
 import SparkButton
 @_spi(SI_SPI) import SparkCommon
 
+/// The SwiftUI version of the Snackbar.
 public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
 
     public struct ButtonConfiguration {
@@ -89,7 +90,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         }
     }
 
-    /// Initialize a new divider view without button.
+    /// Initialize a new snackbar view without button.
     /// - Parameters:
     ///   - theme: The spark theme of the snackbar.
     ///   - intent: The intent of the snackbar.
@@ -111,7 +112,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         )
     }
 
-    /// Initialize a new divider view with a `SnackbarButton`.
+    /// Initialize a new snackbar view with a `SnackbarButton`.
     /// - Parameters:
     ///   - theme: The spark theme of the snackbar.
     ///   - intent: The intent of the snackbar.
@@ -136,7 +137,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         )
     }
 
-    /// Initialize a new divider view with a `SnackbarButton`.
+    /// Initialize a new snackbar view with a `SnackbarButton`.
     /// - Parameters:
     ///   - theme: The spark theme of the snackbar.
     ///   - intent: The intent of the snackbar.
