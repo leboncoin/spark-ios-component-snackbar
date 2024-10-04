@@ -36,7 +36,7 @@ public final class SnackbarUIView: UIView {
     }
 
     /// The type of the snackbar.
-    public var type: SnackbarType = .horizontal {
+    public var type: SnackbarType = .vertical {
         didSet {
             guard self.type != oldValue else { return }
             self.setNeedsLayout()
@@ -53,7 +53,6 @@ public final class SnackbarUIView: UIView {
     }
 
     public private(set) var imageView: UIImageView?
-    @ScaledUIMetric private var iconSize = SnackbarConstants.iconSize
 
     public let label = UILabel()
     public private(set) var buttonView: ButtonUIView?
@@ -277,15 +276,14 @@ public final class SnackbarUIView: UIView {
     public func setImage(_ image: UIImage?) {
         if let image {
             if self.imageContainer == nil {
-                let imageView = UIImageView(image: image)
+                let imageView = UIImageView(frame: .init(origin: .zero, size: .init(width: SnackbarConstants.iconSize, height: SnackbarConstants.iconSize)))
+                imageView.image = image
                 self.addImageView(imageView)
                 self.setNeedsLayout()
             } else {
                 self.imageView?.image = image
             }
         } else {
-            self.imageViewWidthConstraint.isActive = false
-            self.imageViewWidthConstraint = NSLayoutConstraint()
             self.imageContainer = nil
             self.imageView = nil
             self.setNeedsLayout()
@@ -294,13 +292,10 @@ public final class SnackbarUIView: UIView {
 
     private func addImageView(_ imageView: UIImageView) {
         imageView.tintColor = self.viewModel.foregroundColor.uiColor
-        imageView.adjustsImageSizeForAccessibilityContentSizeCategory = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
 
         let imageContainer = UIView()
         imageContainer.addSubview(imageView)
-
-        self.imageViewWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: self.iconSize)
 
         let leadingAnchorConstraint = imageView.leadingAnchor.constraint(equalTo: imageContainer.leadingAnchor)
         let topAnchorConstraint = imageView.topAnchor.constraint(greaterThanOrEqualTo: imageContainer.topAnchor)
@@ -312,7 +307,7 @@ public final class SnackbarUIView: UIView {
             imageView.centerXAnchor.constraint(equalTo: imageContainer.centerXAnchor),
             leadingAnchorConstraint,
             topAnchorConstraint,
-            self.imageViewWidthConstraint,
+            imageView.widthAnchor.constraint(equalToConstant: SnackbarConstants.iconSize),
             imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor)
         ])
 
@@ -372,7 +367,6 @@ public final class SnackbarUIView: UIView {
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if self.traitCollection.hasDifferentSizeCategory(comparedTo: previousTraitCollection) {
-            self.imageViewWidthConstraint.constant = self.iconSize
             self.layer.cornerRadius = self.cornerRadius
         }
         if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {

@@ -32,8 +32,10 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
 
     @ObservedObject private var viewModel: SnackbarViewModel
 
-    @ScaledMetric private var iconSize = SnackbarConstants.iconSize
-    @ScaledMetric private var cornerRadius: CGFloat
+    @ScaledMetric var scaleFactor = 1.0
+    private var cornerRadius: CGFloat {
+        self.viewModel.cornerRadius * self.scaleFactor
+    }
 
     private init(
         theme: any Theme,
@@ -55,7 +57,6 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
             intent: intent
         )
         self.viewModel = viewModel
-        self._cornerRadius = .init(wrappedValue: viewModel.cornerRadius)
 
         self.image = image
         self.text = text
@@ -105,7 +106,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         self.init(
             theme: theme,
             intent: intent,
-            type: .horizontal,
+            type: .vertical,
             variant: .filled,
             image: image,
             text: text
@@ -129,7 +130,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         self.init(
             theme: theme,
             intent: intent,
-            type: .horizontal,
+            type: .vertical,
             variant: .filled,
             image: image,
             text: text,
@@ -156,7 +157,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         self.init(
             theme: theme,
             intent: intent,
-            type: .horizontal,
+            type: .vertical,
             variant: .filled,
             image: image,
             text: text,
@@ -229,7 +230,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
     private func styledImage(_ image: Image) -> some View {
         image
             .resizable()
-            .frame(width: self.iconSize, height: self.iconSize)
+            .frame(width: SnackbarConstants.iconSize, height: SnackbarConstants.iconSize)
             .foregroundColor(self.viewModel.foregroundColor.color)
     }
 
