@@ -31,7 +31,6 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
 
     @ObservedObject private var viewModel: SnackbarViewModel
 
-    @ScaledMetric private var iconSize = SnackbarConstants.iconSize
     @ScaledMetric private var cornerRadius: CGFloat
 
     private init(
@@ -104,7 +103,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         self.init(
             theme: theme,
             intent: intent,
-            type: .horizontal,
+            type: .vertical,
             variant: .filled,
             image: image,
             text: text
@@ -128,7 +127,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         self.init(
             theme: theme,
             intent: intent,
-            type: .horizontal,
+            type: .vertical,
             variant: .filled,
             image: image,
             text: text,
@@ -155,7 +154,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         self.init(
             theme: theme,
             intent: intent,
-            type: .horizontal,
+            type: .vertical,
             variant: .filled,
             image: image,
             text: text,
@@ -228,7 +227,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
     private func styledImage(_ image: Image) -> some View {
         image
             .resizable()
-            .frame(width: self.iconSize, height: self.iconSize)
+            .frame(width: SnackbarConstants.iconSize, height: SnackbarConstants.iconSize)
             .foregroundColor(self.viewModel.foregroundColor.color)
     }
 
