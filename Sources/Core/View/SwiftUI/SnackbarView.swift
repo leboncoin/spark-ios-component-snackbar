@@ -12,6 +12,7 @@ import SparkTheming
 import SparkButton
 @_spi(SI_SPI) import SparkCommon
 
+/// The SwiftUI version of the Snackbar.
 public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
 
     public struct ButtonConfiguration {
@@ -31,7 +32,10 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
 
     @ObservedObject private var viewModel: SnackbarViewModel
 
-    @ScaledMetric private var cornerRadius: CGFloat
+    @ScaledMetric var scaleFactor = 1.0
+    private var cornerRadius: CGFloat {
+        self.viewModel.cornerRadius * self.scaleFactor
+    }
 
     private init(
         theme: any Theme,
@@ -53,7 +57,6 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
             intent: intent
         )
         self.viewModel = viewModel
-        self._cornerRadius = .init(wrappedValue: viewModel.cornerRadius)
 
         self.image = image
         self.text = text
@@ -88,7 +91,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         }
     }
 
-    /// Initialize a new divider view without button.
+    /// Initialize a new snackbar view without button.
     /// - Parameters:
     ///   - theme: The spark theme of the snackbar.
     ///   - intent: The intent of the snackbar.
@@ -110,7 +113,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         )
     }
 
-    /// Initialize a new divider view with a `SnackbarButton`.
+    /// Initialize a new snackbar view with a `SnackbarButton`.
     /// - Parameters:
     ///   - theme: The spark theme of the snackbar.
     ///   - intent: The intent of the snackbar.
@@ -135,7 +138,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         )
     }
 
-    /// Initialize a new divider view with a `SnackbarButton`.
+    /// Initialize a new snackbar view with a `SnackbarButton`.
     /// - Parameters:
     ///   - theme: The spark theme of the snackbar.
     ///   - intent: The intent of the snackbar.
