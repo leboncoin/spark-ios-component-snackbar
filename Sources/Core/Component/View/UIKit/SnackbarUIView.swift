@@ -75,6 +75,15 @@ public final class SnackbarUIView: UIView {
     private var imageViewWidthConstraint = NSLayoutConstraint()
     private var labelTrailingAnchorConstraint = NSLayoutConstraint()
 
+    private var presentationTransformation = CGAffineTransform.identity
+    private var presentationVerticalConstraint = NSLayoutConstraint()
+    private var autoDismissWorkItem: DispatchWorkItem?
+    private var dismissCompletion: ((Bool) -> Void)?
+
+    private var presentationDuration: CGFloat {
+        UIAccessibility.isReduceMotionEnabled ? .zero : SnackbarConstants.presentationDuration
+    }
+
     /// Initialize a new snackbar view.
     /// - Parameters:
     ///   - theme: The spark theme of the snackbar.
@@ -372,5 +381,166 @@ public final class SnackbarUIView: UIView {
         if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             self.applyShadow(self.theme.elevation.dropShadow)
         }
+    }
+
+    // MARK: - Presentation
+    public func show(
+        in view: UIView,
+        from direction: SnackbarPresentationDirection,
+        animated: Bool = true,
+        insets: UIEdgeInsets = .zero,
+        useSafeAreaLayoutGuide: Bool = false
+    ) {
+        self.autoDismissWorkItem?.cancel()
+        self.removeFromSuperview()
+        view.addSubview(self)
+
+        let defaultSpacing = self.theme.layout.spacing.large
+
+        self.setupConstraints(
+            in: view,
+            from: direction,
+            insets: insets,
+            useSafeAreaLayoutGuide: useSafeAreaLayoutGuide,
+            defaultSpacing: defaultSpacing
+        )
+
+        self.setNeedsLayout()
+        self.layoutIfNeeded()
+
+        self.startPresentation(direction: direction)
+    }
+
+    public func showAndDismiss(
+        in view: UIView,
+        from direction: SnackbarPresentationDirection,
+        animated: Bool = true,
+        insets: UIEdgeInsets = .zero,
+        useSafeAreaLayoutGuide: Bool = false,
+        autoDismissDelay: SnackbarAutoDismissDelay = .fast,
+        dismissCompletion: ((Bool) -> Void)? = nil
+    ) {
+        self.show(
+            in: view,
+            from: direction,
+            animated: animated,
+            insets: insets,
+            useSafeAreaLayoutGuide: useSafeAreaLayoutGuide
+        )
+
+        self.queueDismiss(
+            delay: autoDismissDelay.value,
+            completion: dismissCompletion
+        )
+    }
+
+    private func setupConstraints(
+        in view: UIView,
+        from direction: SnackbarPresentationDirection,
+        insets: UIEdgeInsets,
+        useSafeAreaLayoutGuide: Bool,
+        defaultSpacing: CGFloat
+    ) {
+        self.translatesAutoresizingMaskIntoConstraints = false
+
+        let leadingConstraint = self.leadingAnchor.constraint(
+            equalTo: useSafeAreaLayoutGuide ? view.safeAreaLayoutGuide.leadingAnchor : view.leadingAnchor,
+            constant: defaultSpacing + insets.left
+        )
+        leadingConstraint.priority = .required - 1
+        let trailingConstraint = self.trailingAnchor.constraint(
+            equalTo: useSafeAreaLayoutGuide ? view.safeAreaLayoutGuide.trailingAnchor : view.trailingAnchor,
+            constant: -defaultSpacing + insets.right
+        )
+        trailingConstraint.priority = .required - 1
+
+        let centerXConstraint = self.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        centerXConstraint.priority = .defaultHigh
+
+        let topConstraint: NSLayoutConstraint
+        let bottomConstraint: NSLayoutConstraint
+        switch direction {
+        case .top:
+            topConstraint = self.topAnchor.constraint(
+                equalTo: useSafeAreaLayoutGuide ? view.safeAreaLayoutGuide.topAnchor : view.topAnchor,
+                constant: defaultSpacing + insets.top
+            )
+            bottomConstraint = self.bottomAnchor.constraint(
+                lessThanOrEqualTo: useSafeAreaLayoutGuide ? view.safeAreaLayoutGuide.bottomAnchor : view.bottomAnchor,
+                constant: -defaultSpacing + insets.bottom
+            )
+            self.presentationVerticalConstraint = topConstraint
+        case .bottom:
+            topConstraint = self.topAnchor.constraint(
+                greaterThanOrEqualTo: useSafeAreaLayoutGuide ? view.safeAreaLayoutGuide.topAnchor : view.topAnchor,
+                constant: defaultSpacing + insets.top
+            )
+            bottomConstraint = self.bottomAnchor.constraint(
+                equalTo: useSafeAreaLayoutGuide ? view.safeAreaLayoutGuide.bottomAnchor : view.bottomAnchor,
+                constant: -defaultSpacing + insets.bottom
+            )
+            self.presentationVerticalConstraint = bottomConstraint
+        }
+
+        NSLayoutConstraint.activate([
+            leadingConstraint,
+            trailingConstraint,
+            topConstraint,
+            bottomConstraint,
+            centerXConstraint
+        ])
+    }
+
+    private func startPresentation(direction: SnackbarPresentationDirection) {
+        let yTranslation = switch direction {
+        case .top: -self.presentationVerticalConstraint.constant - self.frame.height
+        case .bottom: -self.presentationVerticalConstraint.constant + self.frame.height
+        }
+        self.alpha = 0
+        self.presentationTransformation = .init(translationX: 0, y: yTranslation)
+        self.transform = self.presentationTransformation
+
+        UIView.animate(
+            withDuration: presentationDuration,
+            delay: .zero,
+            options: [.curveEaseOut],
+            animations: {
+                self.alpha = 1
+                self.transform = .identity
+            },
+            completion: nil
+        )
+    }
+
+    private func queueDismiss(delay: Double, completion: ((Bool) -> Void)?) {
+        self.autoDismissWorkItem?.cancel()
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.dismiss(completion: completion)
+        }
+        self.autoDismissWorkItem = workItem
+        let deadline: DispatchTime = .now() + self.presentationDuration + delay
+        DispatchQueue.main.asyncAfter(deadline: deadline, execute: workItem)
+    }
+
+    public func dismiss(completion: ((Bool) -> Void)?) {
+        self.autoDismissWorkItem?.cancel()
+        UIView.animate(
+            withDuration: self.presentationDuration,
+            delay: .zero,
+            options: [.curveEaseIn],
+            animations: {
+                self.transform = self.presentationTransformation
+                self.alpha = 0
+            },
+            completion: { [weak self] isFinished in
+                guard let self else { return }
+                self.removeFromSuperview()
+                completion?(isFinished)
+            }
+        )
+    }
+
+    public func cancelAutoDismiss() {
+        self.autoDismissWorkItem?.cancel()
     }
 }
