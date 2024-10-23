@@ -13,4 +13,5 @@ enum SnackbarConstants {
     static let iconSize: CGFloat = 24
     static let buttonSize: ButtonSize = .medium
     static let buttonShape: ButtonShape = .rounded
+    static let presentationDuration: CGFloat = 0.4
 }
