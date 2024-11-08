@@ -429,7 +429,7 @@ public final class SnackbarUIView: UIView {
         )
 
         self.queueDismiss(
-            delay: autoDismissDelay.value,
+            delay: autoDismissDelay.seconds,
             completion: dismissCompletion
         )
     }

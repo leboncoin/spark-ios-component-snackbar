@@ -12,7 +12,7 @@ public enum SnackbarAutoDismissDelay: CaseIterable, Equatable {
     case fast
     case long
 
-    internal var value: Double {
+    internal var seconds: Double {
         switch self {
         case .fast: return 4
         case .long: return 10
