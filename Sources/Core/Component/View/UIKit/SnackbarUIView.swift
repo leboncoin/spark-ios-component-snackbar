@@ -384,6 +384,13 @@ public final class SnackbarUIView: UIView {
     }
 
     // MARK: - Presentation
+    /// This method displays the Snackbar in a specified view.
+    /// - Parameters:
+    ///   - view: The UIView in which to display the Snackbar.
+    ///   - direction: The SnackbarPresentationDirection (top or bottom) from which the Snackbar appears.
+    ///   - animated: Boolean to determine if the presentation should be animated. Default is ``true``.
+    ///   - insets: UIEdgeInsets to apply additional spacing around the Snackbar. Default is ``.zero``.
+    ///   - useSafeAreaLayoutGuide: Boolean to determine if the Snackbar should respect the safe area. Default is ``false``.
     public func show(
         in view: UIView,
         from direction: SnackbarPresentationDirection,
@@ -411,6 +418,15 @@ public final class SnackbarUIView: UIView {
         self.startPresentation(direction: direction)
     }
 
+    /// This method displays the Snackbar and automatically dismisses it after a specified delay.
+    /// - Parameters:
+    ///   - view: The UIView in which to display the Snackbar.
+    ///   - direction: The SnackbarPresentationDirection (top or bottom) from which the Snackbar appears.
+    ///   - animated: Boolean to determine if the presentation should be animated. Default is ``true``.
+    ///   - insets: UIEdgeInsets to apply additional spacing around the Snackbar. Default is ``.zero``.
+    ///   - useSafeAreaLayoutGuide: Boolean to determine if the Snackbar should respect the safe area. Default is ``false``.
+    ///   - autoDismissDelay: A SnackbarAutoDismissDelay value determining how long the Snackbar should be displayed before auto-dismissing. Default is ``.fast``.
+    ///   - dismissCompletion: An optional closure to be called when the Snackbar is dismissed.
     public func showAndDismiss(
         in view: UIView,
         from direction: SnackbarPresentationDirection,
@@ -522,6 +538,8 @@ public final class SnackbarUIView: UIView {
         DispatchQueue.main.asyncAfter(deadline: deadline, execute: workItem)
     }
 
+    /// This method dismisses the Snackbar.
+    /// - Parameter completion: An optional closure to be called when the dismissal animation is complete.
     public func dismiss(completion: ((Bool) -> Void)?) {
         self.autoDismissWorkItem?.cancel()
         UIView.animate(
@@ -540,6 +558,7 @@ public final class SnackbarUIView: UIView {
         )
     }
 
+    /// This method cancels any scheduled auto-dismissal of the Snackbar.
     public func cancelAutoDismiss() {
         self.autoDismissWorkItem?.cancel()
     }

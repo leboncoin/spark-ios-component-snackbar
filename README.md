@@ -58,6 +58,59 @@ To remove the button, use the `removeButton()` function.
 
 The buttonView style is managed by Spark and shouldn't be overriden.
 
+### Presentation
+
+The Snackbar component offers several public methods for presentation and dismissal:
+
+```swift
+    /// This method displays the Snackbar in a specified view.
+    /// - Parameters:
+    ///   - view: The UIView in which to display the Snackbar.
+    ///   - direction: The SnackbarPresentationDirection (top or bottom) from which the Snackbar appears.
+    ///   - animated: Boolean to determine if the presentation should be animated. Default is ``true``.
+    ///   - insets: UIEdgeInsets to apply additional spacing around the Snackbar. Default is ``.zero``.
+    ///   - useSafeAreaLayoutGuide: Boolean to determine if the Snackbar should respect the safe area. Default is ``false``.
+    public func show(
+        in view: UIView,
+        from direction: SnackbarPresentationDirection,
+        animated: Bool,
+        insets: UIEdgeInsets,
+        useSafeAreaLayoutGuide: Bool
+    )
+
+    /// This method displays the Snackbar and automatically dismisses it after a specified delay.
+    /// - Parameters:
+    ///   - view: The UIView in which to display the Snackbar.
+    ///   - direction: The SnackbarPresentationDirection (top or bottom) from which the Snackbar appears.
+    ///   - animated: Boolean to determine if the presentation should be animated. Default is ``true``.
+    ///   - insets: UIEdgeInsets to apply additional spacing around the Snackbar. Default is ``.zero``.
+    ///   - useSafeAreaLayoutGuide: Boolean to determine if the Snackbar should respect the safe area. Default is ``false``.
+    ///   - autoDismissDelay: A SnackbarAutoDismissDelay value determining how long the Snackbar should be displayed before auto-dismissing. Default is ``.fast``.
+    ///   - dismissCompletion: An optional closure to be called when the Snackbar is dismissed.
+    public func showAndDismiss(
+        in view: UIView,
+        from direction: SnackbarPresentationDirection,
+        animated: Bool,
+        insets: UIEdgeInsets,
+        useSafeAreaLayoutGuide: Bool,
+        autoDismissDelay: SnackbarAutoDismissDelay,
+        dismissCompletion: ((Bool) -> Void)?
+    )
+
+    /// This method dismisses the Snackbar.
+    /// - Parameter completion: An optional closure to be called when the dismissal animation is complete.
+    public func dismiss(completion: ((Bool) -> Void)?)
+
+    /// This method cancels any scheduled auto-dismissal of the Snackbar.
+    public func cancelAutoDismiss()
+```
+
+The Snackbar uses UIView animations for smooth presentation and dismissal. It calculates its position based on the specified direction (top or bottom) and applies appropriate constraints.
+
+The presentation includes a fade-in effect combined with a translation animation. The Snackbar slides into view from either the top or bottom of the screen, depending on the specified direction.
+
+Auto-dismissal is handled using a DispatchWorkItem, which can be cancelled if needed.
+
 ## SwiftUI
 
 ```swift
@@ -133,6 +186,29 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
     /// - Parameter type: The modified type for the snackbar.
     /// - Returns: The updated snackbar.
     public func type(_ type: SnackbarType) -> Self
+```
+
+### Presentation
+
+To present a snackbar, use `.snackbar(...)`
+```swift
+public extension View {
+    /// Presents a Spark snackbar when a given condition is true.
+    /// - Parameters:
+    ///   - isPresented: A binding to a Boolean value that determines whether
+    ///     to present the snackbar.
+    ///   - direction: The direction from which to show the snackbar.
+    ///   - autoDismissDelay: The delay after which the snackbar will be dismissed automatically. Default is ``.fast``.
+    ///   - dismissCompletion: The completion to run after dismiss. Default is ``nil``.
+    ///   - snackbar: The snackbar to show.
+    func snackbar<Snackbar: View>(
+        isPresented: Binding<Bool>,
+        direction: SnackbarPresentationDirection,
+        autoDismissDelay: SnackbarAutoDismissDelay?,
+        dismissCompletion: (() -> Void)?,
+        snackbar: @escaping () -> Snackbar
+    ) -> some View 
+}
 ```
 
 ## Properties
