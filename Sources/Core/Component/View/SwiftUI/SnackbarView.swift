@@ -177,6 +177,7 @@ public struct SnackbarView<SnackbarButton>: View where SnackbarButton: View  {
         }
         .clipShape(.rect(cornerRadius: self.cornerRadius))
         .shadow(self.viewModel.theme.elevation.dropShadow)
+        .compositingGroup()
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(SnackbarAccessibilityIdentifier.view)
     }
