@@ -139,6 +139,7 @@ public final class SnackbarUIView: UIView {
     }
 
     private func setupLabel() {
+        self.label.numberOfLines = 0
         self.label.textColor = self.viewModel.foregroundColor.uiColor
         self.label.font = self.viewModel.textFont.uiFont
         self.label.adjustsFontForContentSizeCategory = true
