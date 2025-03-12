@@ -3,7 +3,7 @@
 //  SparkSnackbarTests
 //
 //  Created by louis.borlee on 01/10/2024.
-//  Copyright © 2024 Adevinta. All rights reserved.
+//  Copyright © 2024 Leboncoin. All rights reserved.
 //
 
 import XCTest

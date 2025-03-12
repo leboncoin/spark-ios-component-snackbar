@@ -7,7 +7,7 @@ import PackageDescription
 let package = Package(
     name: "SparkSnackbar",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v16)
     ],
     products: [
         .library(
@@ -21,17 +21,17 @@ let package = Package(
     ],
     dependencies: [
        .package(
-           url: "https://github.com/adevinta/spark-ios-common.git",
+           url: "https://github.com/leboncoin/spark-ios-common.git",
            // path: "../spark-ios-common"
            /*version*/ "0.0.1"..."999.999.999"
        ),
        .package(
-           url: "https://github.com/adevinta/spark-ios-theming.git",
+           url: "https://github.com/leboncoin/spark-ios-theming.git",
            // path: "../spark-ios-theming"
            /*version*/ "0.0.1"..."999.999.999"
        ),
        .package(
-           url: "https://github.com/adevinta/spark-ios-component-button.git",
+           url: "https://github.com/leboncoin/spark-ios-component-button.git",
            // path: "../spark-ios-component-button"
            /*version*/ "0.0.1"..."999.999.999"
        )
