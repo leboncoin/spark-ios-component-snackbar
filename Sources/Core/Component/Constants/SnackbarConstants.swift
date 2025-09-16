@@ -1,13 +1,13 @@
 //
 //  SnackbarConstants.swift
-//  SparkSnackbar
+//  SparkComponentSnackbar
 //
 //  Created by louis.borlee on 04/09/2024.
 //  Copyright © 2024 Leboncoin. All rights reserved.
 //
 
 import Foundation
-import SparkButton
+import SparkComponentButton
 
 enum SnackbarConstants {
     static let iconSize: CGFloat = 24

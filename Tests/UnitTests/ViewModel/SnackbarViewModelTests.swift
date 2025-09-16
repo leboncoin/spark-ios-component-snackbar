@@ -1,6 +1,6 @@
 //
 //  SnackbarViewModelTests.swift
-//  SparkSnackbar
+//  SparkComponentSnackbar
 //
 //  Created by louis.borlee on 04/09/2024.
 //  Copyright © 2024 Leboncoin. All rights reserved.
@@ -9,9 +9,9 @@
 import XCTest
 import Combine
 import SparkTheming
-import SparkButton
-@testable import SparkSnackbar
-@_spi(SI_SPI) @testable import SparkSnackbarTesting
+import SparkComponentButton
+@testable import SparkComponentSnackbar
+@_spi(SI_SPI) @testable import SparkComponentSnackbarTesting
 @_spi(SI_SPI) import SparkThemingTesting
 @_spi(SI_SPI) import SparkCommonTesting
 

@@ -1,6 +1,6 @@
 //
 //  View+Snackbar.swift
-//  SparkSnackbar
+//  SparkComponentSnackbar
 //
 //  Created by louis.borlee on 08/11/2024.
 //  Copyright © 2024 Leboncoin. All rights reserved.

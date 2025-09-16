@@ -1,6 +1,6 @@
 //
 //  SnackbarUIViewSnapshotTests.swift
-//  SparkSnackbarTests
+//  SparkComponentSnackbarTests
 //
 //  Created by louis.borlee on 01/10/2024.
 //  Copyright © 2024 Leboncoin. All rights reserved.
@@ -8,20 +8,20 @@
 
 import XCTest
 import UIKit
-import SparkButton
+import SparkComponentButton
 @testable import SparkTheme
 @testable import SparkTheming
 @_spi(SI_SPI) @testable import SparkCommon
 @_spi(SI_SPI) @testable import SparkCommonTesting
 @_spi(SI_SPI) @testable import SparkCommonSnapshotTesting
 
-@testable import SparkSnackbar
+@testable import SparkComponentSnackbar
 
 final class SnackbarUIViewSnapshotTests: UIKitComponentSnapshotTestCase {
 
     // MARK: - Properties
 
-    private let theme: Theme = SparkTheme.shared
+    private let theme: any Theme = SparkTheme.shared
 
     // MARK: - Tests
 

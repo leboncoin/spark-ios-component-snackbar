@@ -1,6 +1,6 @@
 //
 //  SnackbarUIView.swift
-//  SparkSnackbar
+//  SparkComponentSnackbar
 //
 //  Created by louis.borlee on 04/09/2024.
 //  Copyright © 2024 Leboncoin. All rights reserved.
@@ -9,14 +9,14 @@
 import UIKit
 import Combine
 import SparkTheming
-import SparkButton
+import SparkComponentButton
 @_spi(SI_SPI) import SparkCommon
 
 /// The UIKit version of the snacbkar.
 public final class SnackbarUIView: UIView {
 
     /// The spark theme of the snackbar.
-    public var theme: Theme {
+    public var theme: any Theme {
         get {
             return self.viewModel.theme
         }
