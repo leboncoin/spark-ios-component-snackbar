@@ -1,14 +1,14 @@
 //
 //  SnackbarGetColorsUseCaseTests.swift
-//  SparkSnackbar
+//  SparkComponentSnackbar
 //
 //  Created by louis.borlee on 03/09/2024.
 //  Copyright © 2024 Leboncoin. All rights reserved.
 //
 
 import XCTest
-@testable import SparkSnackbar
-@_spi(SI_SPI) @testable import SparkSnackbarTesting
+@testable import SparkComponentSnackbar
+@_spi(SI_SPI) @testable import SparkComponentSnackbarTesting
 @_spi(SI_SPI) import SparkThemingTesting
 
 final class SnackbarGetColorsUseCaseTests: XCTestCase {

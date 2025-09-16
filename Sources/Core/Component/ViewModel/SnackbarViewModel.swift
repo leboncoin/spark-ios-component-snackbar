@@ -1,6 +1,6 @@
 //
 //  SnackbarViewModel.swift
-//  SparkSnackbar
+//  SparkComponentSnackbar
 //
 //  Created by louis.borlee on 04/09/2024.
 //  Copyright © 2024 Leboncoin. All rights reserved.
@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 import SparkTheming
-import SparkButton
+import SparkComponentButton
 
 final class SnackbarViewModel: ObservableObject {
 
@@ -43,15 +43,15 @@ final class SnackbarViewModel: ObservableObject {
 
     @Published private(set) var cornerRadius: CGFloat
 
-    private let getColorsUseCase: SnackbarGetColorsUseCasable
-    private let getButtonTypeUseCase: SnackbarGetButtonTypeUseCasable
+    private let getColorsUseCase: any SnackbarGetColorsUseCasable
+    private let getButtonTypeUseCase: any SnackbarGetButtonTypeUseCasable
 
     init(
         theme: any Theme,
         variant: SnackbarVariant,
         intent: SnackbarIntent,
-        getColorsUseCase: SnackbarGetColorsUseCasable = SnackbarGetColorsUseCase(),
-        getButtonTypeUseCase: SnackbarGetButtonTypeUseCasable = SnackbarGetButtonTypeUseCase()
+        getColorsUseCase: any SnackbarGetColorsUseCasable = SnackbarGetColorsUseCase(),
+        getButtonTypeUseCase: any SnackbarGetButtonTypeUseCasable = SnackbarGetButtonTypeUseCase()
     ) {
         self.theme = theme
 

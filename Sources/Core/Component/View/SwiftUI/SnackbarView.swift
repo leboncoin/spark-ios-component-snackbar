@@ -1,6 +1,6 @@
 //
 //  SnackbarView.swift
-//  SparkSnackbar
+//  SparkComponentSnackbar
 //
 //  Created by louis.borlee on 13/09/2024.
 //  Copyright © 2024 Leboncoin. All rights reserved.
@@ -9,7 +9,7 @@
 import SwiftUI
 import Combine
 import SparkTheming
-import SparkButton
+import SparkComponentButton
 @_spi(SI_SPI) import SparkCommon
 
 /// The SwiftUI version of the Snackbar.

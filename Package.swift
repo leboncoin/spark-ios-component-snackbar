@@ -5,18 +5,18 @@ import PackageDescription
 
 // swiftlint:disable all
 let package = Package(
-    name: "SparkSnackbar",
+    name: "SparkComponentSnackbar",
     platforms: [
         .iOS(.v16)
     ],
     products: [
         .library(
-            name: "SparkSnackbar",
-            targets: ["SparkSnackbar"]
+            name: "SparkComponentSnackbar",
+            targets: ["SparkComponentSnackbar"]
         ),
         .library(
-            name: "SparkSnackbarTesting",
-            targets: ["SparkSnackbarTesting"]
+            name: "SparkComponentSnackbarTesting",
+            targets: ["SparkComponentSnackbarTesting"]
         )
     ],
     dependencies: [
@@ -38,7 +38,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SparkSnackbar",
+            name: "SparkComponentSnackbar",
             dependencies: [
                 .product(
                     name: "SparkCommon",
@@ -49,16 +49,16 @@ let package = Package(
                     package: "spark-ios-theming"
                 ),
                 .product(
-                    name: "SparkButton",
+                    name: "SparkComponentButton",
                     package: "spark-ios-component-button"
                 )
             ],
             path: "Sources/Core"
         ),
         .target(
-            name: "SparkSnackbarTesting",
+            name: "SparkComponentSnackbarTesting",
             dependencies: [
-                "SparkSnackbar",
+                "SparkComponentSnackbar",
                 .product(
                     name: "SparkCommon",
                     package: "spark-ios-common"
@@ -79,10 +79,10 @@ let package = Package(
             path: "Sources/Testing"
         ),
         .testTarget(
-            name: "SparkSnackbarUnitTests",
+            name: "SparkComponentSnackbarUnitTests",
             dependencies: [
-                "SparkSnackbar",
-                "SparkSnackbarTesting",
+                "SparkComponentSnackbar",
+                "SparkComponentSnackbarTesting",
                 .product(
                     name: "SparkCommonTesting",
                     package: "spark-ios-common"
@@ -95,10 +95,10 @@ let package = Package(
             path: "Tests/UnitTests"
         ),
         .testTarget(
-            name: "SparkSnackbarSnapshotTests",
+            name: "SparkComponentSnackbarSnapshotTests",
             dependencies: [
-                "SparkSnackbar",
-                "SparkSnackbarTesting",
+                "SparkComponentSnackbar",
+                "SparkComponentSnackbarTesting",
                 .product(
                     name: "SparkCommonSnapshotTesting",
                     package: "spark-ios-common"

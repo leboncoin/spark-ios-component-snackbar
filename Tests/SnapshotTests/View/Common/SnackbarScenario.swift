@@ -1,13 +1,13 @@
 //
 //  SnackbarScenario.swift
-//  SparkSnackbarTests
+//  SparkComponentSnackbarTests
 //
 //  Created by louis.borlee on 01/10/2024.
 //  Copyright © 2024 Leboncoin. All rights reserved.
 //
 
 import Foundation
-@testable import SparkSnackbar
+@testable import SparkComponentSnackbar
 @_spi(SI_SPI) @testable import SparkCommonSnapshotTesting
 
 enum SnackbarScenario: String {
