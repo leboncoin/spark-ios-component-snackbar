@@ -34,8 +34,6 @@ final class SnackbarGetButtonTypeUseCase: SnackbarGetButtonTypeUseCasable {
             return self.getNeutralButtonType(variant: variant)
         case .main:
             return self.getMainButtonType(variant: variant)
-        case .basic:
-            return self.getBasicButtonType(variant: variant)
         case .support:
             return self.getSupportButtonType(variant: variant)
         case .accent:
@@ -107,18 +105,6 @@ final class SnackbarGetButtonTypeUseCase: SnackbarGetButtonTypeUseCasable {
 
     private func getMainButtonType(variant: SnackbarVariant) -> SnackbarButtonType {
         let buttonIntent = ButtonIntent.main
-        let buttonVariant: ButtonVariant = switch variant {
-        case .filled: .filled
-        case .tinted: .tinted
-        }
-        return .init(
-            intent: buttonIntent,
-            variant: buttonVariant
-        )
-    }
-
-    private func getBasicButtonType(variant: SnackbarVariant) -> SnackbarButtonType {
-        let buttonIntent = ButtonIntent.basic
         let buttonVariant: ButtonVariant = switch variant {
         case .filled: .filled
         case .tinted: .tinted

@@ -24,7 +24,7 @@ struct SnackbarScenarioConfiguration: CustomStringConvertible {
     let sizes: [UIContentSizeCategory]
 
     var testName: String {
-        return "\(self)-\(self.intent)-\(self.variant)-\(self.type)-\(self.textConfiguration)-\(self.buttonConfiguration))"
+        return "\(self)-\(self.intent)-\(self.variant)-\(self.type)-\(self.textConfiguration)-\(isTextMultiline ? "multiline" : "oneline")-\(self.buttonConfiguration)-\(withImage ? "withImage" : "withoutImage")"
     }
 
     enum TextConfiguration: CustomStringConvertible {

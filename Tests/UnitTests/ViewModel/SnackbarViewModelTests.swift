@@ -55,7 +55,7 @@ final class SnackbarViewModelTests: XCTestCase {
             variant: expectedButtonVariant
         )
 
-        let expectedIntent = SnackbarIntent.basic
+        let expectedIntent = SnackbarIntent.support
         let expectedVariant = SnackbarVariant.tinted
 
         // WHEN
@@ -129,7 +129,7 @@ final class SnackbarViewModelTests: XCTestCase {
             variant: expectedButtonVariant
         )
 
-        let expectedIntent = SnackbarIntent.basic
+        let expectedIntent = SnackbarIntent.support
         let expectedVariant = SnackbarVariant.tinted
 
         let newTheme = ThemeGeneratedMock.mocked()
@@ -211,7 +211,7 @@ final class SnackbarViewModelTests: XCTestCase {
             variant: expectedButtonVariant
         )
 
-        let oldIntent = SnackbarIntent.basic
+        let oldIntent = SnackbarIntent.support
         let expectedVariant = SnackbarVariant.tinted
 
         let viewModel = SnackbarViewModel(
@@ -288,7 +288,7 @@ final class SnackbarViewModelTests: XCTestCase {
             variant: expectedButtonVariant
         )
 
-        let intent = SnackbarIntent.basic
+        let intent = SnackbarIntent.support
 
         let viewModel = SnackbarViewModel(
             theme: self.theme,
@@ -337,7 +337,7 @@ final class SnackbarViewModelTests: XCTestCase {
             variant: expectedButtonVariant
         )
 
-        let expectedIntent = SnackbarIntent.basic
+        let expectedIntent = SnackbarIntent.support
         let oldVariant = SnackbarVariant.tinted
 
         let viewModel = SnackbarViewModel(
