@@ -16,7 +16,6 @@ public enum SnackbarIntent: CaseIterable {
     case info
     case neutral
     case main
-    case basic
     case support
     case accent
     case surfaceInverse

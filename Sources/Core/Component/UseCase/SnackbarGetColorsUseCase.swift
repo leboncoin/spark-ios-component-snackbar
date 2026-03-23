@@ -36,8 +36,6 @@ final class SnackbarGetColorsUseCase: SnackbarGetColorsUseCasable {
             return self.getNeutralColors(colors: colors, variant: variant)
         case .main:
             return self.getMainColors(colors: colors, variant: variant)
-        case .basic:
-            return self.getBasicColors(colors: colors, variant: variant)
         case .support:
             return self.getSupportColors(colors: colors, variant: variant)
         case .accent:
@@ -142,23 +140,6 @@ final class SnackbarGetColorsUseCase: SnackbarGetColorsUseCasable {
         case .tinted:
             backgroundColor = colors.main.mainContainer
             foregroundColor = colors.main.onMainContainer
-        }
-        return .init(
-            background: backgroundColor,
-            foreground: foregroundColor
-        )
-    }
-
-    private func getBasicColors(colors: any Colors, variant: SnackbarVariant) -> SnackbarColors {
-        let backgroundColor: any ColorToken
-        let foregroundColor: any ColorToken
-        switch variant {
-        case .filled:
-            backgroundColor = colors.basic.basic
-            foregroundColor = colors.basic.onBasic
-        case .tinted:
-            backgroundColor = colors.basic.basicContainer
-            foregroundColor = colors.basic.onBasicContainer
         }
         return .init(
             background: backgroundColor,

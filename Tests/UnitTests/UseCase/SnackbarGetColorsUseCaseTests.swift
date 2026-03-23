@@ -95,19 +95,6 @@ final class SnackbarGetColorsUseCaseTests: XCTestCase {
         XCTAssertTrue(snackbarColors.foreground.equals(self.colors.main.onMain), "Wrong foreground color")
     }
 
-    func test_filled_basic() {
-        // GIVEN - WHEN
-        let snackbarColors = self.useCase.execute(
-            colors: self.colors,
-            intent: .basic,
-            variant: .filled
-        )
-
-        // THEN
-        XCTAssertTrue(snackbarColors.background.equals(self.colors.basic.basic), "Wrong background color")
-        XCTAssertTrue(snackbarColors.foreground.equals(self.colors.basic.onBasic), "Wrong foreground color")
-    }
-
     func test_filled_support() {
         // GIVEN - WHEN
         let snackbarColors = self.useCase.execute(
@@ -224,19 +211,6 @@ final class SnackbarGetColorsUseCaseTests: XCTestCase {
         // THEN
         XCTAssertTrue(snackbarColors.background.equals(self.colors.main.mainContainer), "Wrong background color")
         XCTAssertTrue(snackbarColors.foreground.equals(self.colors.main.onMainContainer), "Wrong foreground color")
-    }
-
-    func test_tinted_basic() {
-        // GIVEN - WHEN
-        let snackbarColors = self.useCase.execute(
-            colors: self.colors,
-            intent: .basic,
-            variant: .tinted
-        )
-
-        // THEN
-        XCTAssertTrue(snackbarColors.background.equals(self.colors.basic.basicContainer), "Wrong background color")
-        XCTAssertTrue(snackbarColors.foreground.equals(self.colors.basic.onBasicContainer), "Wrong foreground color")
     }
 
     func test_tinted_support() {

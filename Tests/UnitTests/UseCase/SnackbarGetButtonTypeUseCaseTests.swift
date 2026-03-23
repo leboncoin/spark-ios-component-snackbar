@@ -160,30 +160,6 @@ final class SnackbarGetButtonTypeUseCaseTests: XCTestCase {
         XCTAssertEqual(buttonType.intent, .main, "Wrong button intent")
     }
 
-    func test_basic_filled() {
-        // GIVEN - WHEN
-        let buttonType = self.useCase.execute(
-            intent: .basic,
-            variant: .filled
-        )
-
-        // THEN
-        XCTAssertEqual(buttonType.variant, .filled, "Wrong button variant")
-        XCTAssertEqual(buttonType.intent, .basic, "Wrong button intent")
-    }
-
-    func test_basic_tinted() {
-        // GIVEN - WHEN
-        let buttonType = self.useCase.execute(
-            intent: .basic,
-            variant: .tinted
-        )
-
-        // THEN
-        XCTAssertEqual(buttonType.variant, .tinted, "Wrong button variant")
-        XCTAssertEqual(buttonType.intent, .basic, "Wrong button intent")
-    }
-
     func test_support_filled() {
         // GIVEN - WHEN
         let buttonType = self.useCase.execute(
