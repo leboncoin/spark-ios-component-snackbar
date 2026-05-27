@@ -2,81 +2,94 @@
 //  SnackbarViewModifier.swift
 //  SparkComponentSnackbar
 //
-//  Created by louis.borlee on 08/11/2024.
-//  Copyright © 2024 Leboncoin. All rights reserved.
+//  Created by robin.lemaire on 13/05/2026.
+//  Copyright © 2026 Leboncoin. All rights reserved.
 //
 
 import SwiftUI
+@_spi(SI_SPI) import SparkTheming
+@_spi(SI_SPI) import SparkCommon
+import SparkComponentButton
 
-struct SnackbarViewModifier<Snackbar: View>: ViewModifier {
+internal struct SnackbarViewModifier<TitleLabel, DescriptionLabel, ActionButton>: ViewModifier where TitleLabel: View, DescriptionLabel: View, ActionButton: View {
+
+    // MARK: - Properties
+
+    private let icon: Image?
+    private var titleLabel: () -> TitleLabel
+    private var descriptionLabel: () -> DescriptionLabel
+    private var button: () -> ActionButton
 
     @Binding private var isPresented: Bool
-    @State private var currentTask: Task<Void, Never>?
-
-    private let snackbar: (() -> Snackbar)?
-    private let direction: SnackbarPresentationDirection
     private let autoDismissDelay: SnackbarAutoDismissDelay?
     private let dismissCompletion: (() -> Void)?
 
-    init(isPresented: Binding<Bool>,
-         direction: SnackbarPresentationDirection,
-         autoDismissDelay: SnackbarAutoDismissDelay?,
-         dismissCompletion: (() -> Void)?,
-         snackbar: @escaping () -> Snackbar) {
+    @State private var currentTask: Task<Void, Never>?
+
+    // MARK: - Initialization
+
+    init(
+        _ icon: Image?,
+        isPresented: Binding<Bool>,
+        autoDismissDelay: SnackbarAutoDismissDelay?,
+        dismissCompletion: (() -> Void)?,
+        titleLabel: @escaping () -> TitleLabel,
+        descriptionLabel: @escaping () -> DescriptionLabel,
+        button: @escaping () -> ActionButton
+    ) {
+        self.icon = icon
         self._isPresented = isPresented
-        self.direction = direction
         self.autoDismissDelay = autoDismissDelay
         self.dismissCompletion = dismissCompletion
-        self.snackbar = snackbar
+        self.titleLabel = titleLabel
+        self.descriptionLabel = descriptionLabel
+        self.button = button
     }
+
+    // MARK: - View
 
     func body(content: Content) -> some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             content
-            VStack {
-                if isPresented {
-                    if self.direction == .bottom {
-                        Spacer()
-                    }
-                    self.snackbar?()
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(16)
-                        .transition(.move(edge: self.getEdge()).combined(with: .opacity))
-                        .transaction { transaction in
-                            transaction.disablesAnimations = true // Removes animation issues
-                        }
-                        .onAppear {
-                            if let autoDismissDelay {
-                                self.currentTask = Task(priority: .background, operation: {
-                                    do {
-                                        try await Task.sleep(nanoseconds: UInt64(autoDismissDelay.seconds * powl(10, 9)))
-                                        self.isPresented = false
-                                    } catch {}
-                                })
-                            }
-                        }
-                        .onDisappear {
-                            self.dismissCompletion?()
-                            self.currentTask?.cancel()
-                            self.currentTask = nil
-                        }
-                    if self.direction == .top {
-                        Spacer()
+
+            if self.isPresented {
+                Snackbar(
+                    self.icon,
+                    titleLabel: self.titleLabel,
+                    descriptionLabel: self.descriptionLabel,
+                    button: self.button
+                )
+                .onAppear {
+                    if let autoDismissDelay {
+                        self.currentTask = Task(priority: .background, operation: {
+                            do {
+                                try await Task.sleep(nanoseconds: UInt64(autoDismissDelay.seconds * powl(10, 9)))
+                                self.isPresented = false
+                            } catch {}
+                        })
                     }
                 }
+                .onDisappear {
+                    self.dismissCompletion?()
+                    self.currentTask?.cancel()
+                    self.currentTask = nil
+                }
             }
-            .animation(
-                self.isPresented ? .easeOut(duration: SnackbarConstants.presentationDuration) : .easeIn(duration: SnackbarConstants.presentationDuration),
-                value: self.isPresented
-            )
         }
-    }
-
-    private func getEdge() -> Edge {
-        return switch self.direction {
-        case .top: .top
-        case .bottom: .bottom
-        }
+        .optionalAnimation(
+            .animate(isPresented: self.isPresented),
+            value: self.isPresented
+        )
     }
 }
 
+// MARK: - Animation Extension
+
+private extension Animation {
+
+    static func animate(isPresented: Bool) -> Animation {
+        let duration = SnackbarConstants.presentationDuration
+
+        return isPresented ? .easeOut(duration: duration) : .easeIn(duration: duration)
+    }
+}

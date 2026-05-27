@@ -8,10 +8,13 @@
 
 /// The accessibility identifiers for the snackbar.
 public enum SnackbarAccessibilityIdentifier {
-    /// Snackbar's identifier.
+
+    // MARK: - Properties
+
+    /// The default view accessibility identifier. Can be changed by the consumer.
     public static let view = "spark-snackbar"
-    /// Snackbar's label identifier.
+    /// The default label accessibility identifier.
     public static let label = "spark-snackbar-label"
-    /// Snackbar's button identifier.
+    /// The default button accessibility identifier.
     public static let button = "spark-snackbar-button"
 }

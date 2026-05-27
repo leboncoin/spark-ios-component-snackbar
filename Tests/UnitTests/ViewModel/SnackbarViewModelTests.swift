@@ -1,496 +1,467 @@
 //
 //  SnackbarViewModelTests.swift
-//  SparkComponentSnackbar
+//  SparkComponentSnackbarTests
 //
-//  Created by louis.borlee on 04/09/2024.
-//  Copyright © 2024 Leboncoin. All rights reserved.
+//  Created by robin.lemaire on 12/05/2026.
+//  Copyright © 2026 Leboncoin. All rights reserved.
 //
 
-import XCTest
+import Foundation
+import SwiftUI
 import Combine
-import SparkTheming
-import SparkComponentButton
+
 @testable import SparkComponentSnackbar
 @_spi(SI_SPI) @testable import SparkComponentSnackbarTesting
 @_spi(SI_SPI) import SparkThemingTesting
+@_spi(SI_SPI) import SparkTheming
 @_spi(SI_SPI) import SparkCommonTesting
+import Testing
 
-final class SnackbarViewModelTests: XCTestCase {
+@Suite("Snackbar ViewModel Tests")
+struct SnackbarViewModelTests {
 
-    private let theme = ThemeGeneratedMock.mocked()
-    private var publishers: SnackbarPublishers!
+    // MARK: - Initialization
 
-    override func setUp() {
-        super.setUp()
-        self.publishers = nil
-    }
+    @Test("Initialization should use default values")
+    func initializationShouldUseDefaultValues() {
+        // GIVEN / WHEN
+        let stub = Stub()
+        let viewModel = stub.viewModel
 
-    func setupPublishers(viewModel: SnackbarViewModel) {
-        self.publishers = .init(
-            backgroundColor: PublisherMock(publisher: viewModel.$backgroundColor),
-            foregroundColor: PublisherMock(publisher: viewModel.$foregroundColor),
-            textFont: PublisherMock(publisher: viewModel.$textFont),
-            buttonIntent: PublisherMock(publisher: viewModel.$buttonIntent),
-            buttonVariant: PublisherMock(publisher: viewModel.$buttonVariant),
-            cornerRadius: PublisherMock(publisher: viewModel.$cornerRadius)
+        // THEN
+        #expect(viewModel.theme == nil)
+        #expect(viewModel.intent == nil)
+
+        expectEqualToExpected(
+            on: stub,
+            otherBorder: SnackbarBorder(),
+            otherColors: SnackbarColors(),
+            otherIntents: SnackbarIntents(),
+            otherLayout: SnackbarLayout(),
+            otherTypographies: SnackbarTypographies()
         )
-        self.publishers.load()
+
+        expectNotCalled(
+            on: stub,
+            getBorderUseCase: true,
+            getColorsUseCase: true,
+            getIntentsUseCase: true,
+            getLayoutUseCase: true,
+            getTypographiesUseCase: true
+        )
     }
 
-    func test_init() throws {
+    // MARK: - Setup
+
+    @Test("Setup should call all use cases")
+    func setupShouldCallAllUseCases() {
         // GIVEN
-        let expectedBackgroundColor = ColorTokenGeneratedMock.blue()
-        let expectedForegroundColor = ColorTokenGeneratedMock.red()
-        let getColorsUseCaseMock = SnackbarGetColorsUseCasableGeneratedMock()
-        getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReturnValue = .init(
-            background: expectedBackgroundColor,
-            foreground: expectedForegroundColor
-        )
-
-        let expectedButtonIntent = ButtonIntent.accent
-        let expectedButtonVariant = ButtonVariant.outlined
-        let getButtonTypeUseCaseMock = SnackbarGetButtonTypeUseCasableGeneratedMock()
-        getButtonTypeUseCaseMock.executeWithIntentAndVariantReturnValue = .init(
-            intent: expectedButtonIntent,
-            variant: expectedButtonVariant
-        )
-
-        let expectedIntent = SnackbarIntent.support
-        let expectedVariant = SnackbarVariant.tinted
+        let stub = Stub()
+        let viewModel = stub.viewModel
 
         // WHEN
-        let viewModel = SnackbarViewModel(
-            theme: self.theme,
-            variant: expectedVariant,
-            intent: expectedIntent,
-            getColorsUseCase: getColorsUseCaseMock,
-            getButtonTypeUseCase: getButtonTypeUseCaseMock
+        viewModel.setup(stub: stub)
+
+        // THEN
+        expectEqualToExpected(on: stub)
+
+        SnackbarGetBorderUseCaseableMockTest.expect(
+            stub.getBorderUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenTheme: stub.givenTheme,
+            expectedReturnValue: stub.expectedBorder
         )
-        self.setupPublishers(viewModel: viewModel)
 
-        // THEN - Values
-        XCTAssertEqual(viewModel.intent, expectedIntent, "Wrong intent")
-        XCTAssertEqual(viewModel.variant, expectedVariant, "Wrong variant")
-
-        XCTAssertTrue(viewModel.backgroundColor.equals(expectedBackgroundColor), "Wrong background color")
-        XCTAssertTrue(viewModel.foregroundColor.equals(expectedForegroundColor), "Wrong foreground color")
-
-        let expectedFont = try XCTUnwrap(self.theme.typography.body2 as? TypographyFontTokenGeneratedMock, "Couldn't unwrap expectedFont")
-        XCTAssertIdentical(viewModel.textFont as? TypographyFontTokenGeneratedMock, expectedFont, "Wrong textFont")
-
-        XCTAssertEqual(viewModel.buttonIntent, expectedButtonIntent, "Wrong button intent")
-        XCTAssertEqual(viewModel.buttonVariant, expectedButtonVariant, "Wrong button variant")
-
-        XCTAssertEqual(viewModel.cornerRadius, self.theme.border.radius.medium, "Wrong cornerRadius")
-
-        // THEN - UseCases
-        XCTAssertEqual(getColorsUseCaseMock.executeWithColorsAndIntentAndVariantCallsCount, 1, "getColorsUseCaseMock.executeWithColorsAndIntentAndVariant should have been called once")
-        let getColorsUseCaseReceivedArguments = try XCTUnwrap(
-            getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReceivedArguments,
-            "Couldn't unwrap getColorsUseCaseReceivedArguments"
+        SnackbarGetColorsUseCaseableMockTest.expect(
+            stub.getColorsUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenTheme: stub.givenTheme,
+            givenIntent: stub.givenIntent,
+            expectedReturnValue: stub.expectedColors
         )
-        let getColorsUseCaseReceivedArgumentsColors = try XCTUnwrap(getColorsUseCaseReceivedArguments.colors as? ColorsGeneratedMock, "Couldn't unwrap getColorsUseCaseReceivedArgumentsColors")
-        XCTAssertIdentical(getColorsUseCaseReceivedArgumentsColors, self.theme.colors as? ColorsGeneratedMock, "Wrong received getColorsUseCase.colors")
-        XCTAssertEqual(getColorsUseCaseReceivedArguments.intent, expectedIntent, "Wrong received getColorsUseCase.intent")
-        XCTAssertEqual(getColorsUseCaseReceivedArguments.variant, expectedVariant, "Wrong received getColorsUseCase.variant")
 
-        XCTAssertEqual(getButtonTypeUseCaseMock.executeWithIntentAndVariantCallsCount, 1, "getButtonTypeUseCaseMock.executeWithIntentAndVariant should have been called once")
-        let getButtonTypeUseCaseReceivedArguments = try XCTUnwrap(
-            getButtonTypeUseCaseMock.executeWithIntentAndVariantReceivedArguments,
-            "Couldn't unwrap getButtonTypeUseCaseReceivedArguments"
+        SnackbarGetLayoutUseCaseableMockTest.expect(
+            stub.getLayoutUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenTheme: stub.givenTheme,
+            expectedReturnValue: stub.expectedLayout
         )
-        XCTAssertEqual(getButtonTypeUseCaseReceivedArguments.intent, expectedIntent, "Wrong received getButtonTypeUseCase.intent")
-        XCTAssertEqual(getButtonTypeUseCaseReceivedArguments.variant, expectedVariant, "Wrong received getButtonTypeUseCase.variant")
 
-        // THEN - Publishers
-        XCTAssertEqual(self.publishers.backgroundColor.sinkCount, 1, "$backgroundColor should have been called once")
-        XCTAssertEqual(self.publishers.foregroundColor.sinkCount, 1, "$foregroundColor should have been called once")
-        XCTAssertEqual(self.publishers.textFont.sinkCount, 1, "$textFont should have been called once")
-        XCTAssertEqual(self.publishers.buttonIntent.sinkCount, 1, "$buttonIntent should have been called once")
-        XCTAssertEqual(self.publishers.buttonVariant.sinkCount, 1, "$buttonVariant should have been called once")
-        XCTAssertEqual(self.publishers.cornerRadius.sinkCount, 1, "$cornerRadius should have been called once")
+        SnackbarGetIntentsUseCaseableMockTest.expect(
+            stub.getIntentsUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenIntent: stub.givenIntent,
+            expectedReturnValue: stub.expectedIntents
+        )
+
+        SnackbarGetTypographiesUseCaseableMockTest.expect(
+            stub.getTypographiesUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenTheme: stub.givenTheme,
+            expectedReturnValue: stub.expectedTypographies
+        )
     }
 
-    func test_didSet_theme() throws {
+    // MARK: - Property Changes
+
+    @Test("Theme when changed should call use cases")
+    func themeWhenChangedShouldCallUseCases() {
         // GIVEN
-        let expectedBackgroundColor = ColorTokenGeneratedMock.blue()
-        let expectedForegroundColor = ColorTokenGeneratedMock.red()
-        let getColorsUseCaseMock = SnackbarGetColorsUseCasableGeneratedMock()
-        getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReturnValue = .init(
-            background: expectedBackgroundColor,
-            foreground: expectedForegroundColor
-        )
+        let stub = Stub()
+        let viewModel = stub.viewModel
+        viewModel.setup(stub: stub)
 
-        let expectedButtonIntent = ButtonIntent.accent
-        let expectedButtonVariant = ButtonVariant.outlined
-        let getButtonTypeUseCaseMock = SnackbarGetButtonTypeUseCasableGeneratedMock()
-        getButtonTypeUseCaseMock.executeWithIntentAndVariantReturnValue = .init(
-            intent: expectedButtonIntent,
-            variant: expectedButtonVariant
-        )
-
-        let expectedIntent = SnackbarIntent.support
-        let expectedVariant = SnackbarVariant.tinted
+        stub.resetMockedData()
 
         let newTheme = ThemeGeneratedMock.mocked()
-
-        let viewModel = SnackbarViewModel(
-            theme: self.theme,
-            variant: expectedVariant,
-            intent: expectedIntent,
-            getColorsUseCase: getColorsUseCaseMock,
-            getButtonTypeUseCase: getButtonTypeUseCaseMock
-        )
-        self.setupPublishers(viewModel: viewModel)
-
-        self.publishers.reset()
-        getColorsUseCaseMock.reset()
-        getButtonTypeUseCaseMock.reset()
 
         // WHEN
         viewModel.theme = newTheme
 
-        // THEN - Values
-        XCTAssertEqual(viewModel.intent, expectedIntent, "Wrong intent")
-        XCTAssertEqual(viewModel.variant, expectedVariant, "Wrong variant")
+        // THEN
+        expectEqualToExpected(on: stub)
 
-        XCTAssertTrue(viewModel.backgroundColor.equals(expectedBackgroundColor), "Wrong background color")
-        XCTAssertTrue(viewModel.foregroundColor.equals(expectedForegroundColor), "Wrong foreground color")
-
-        let expectedFont = try XCTUnwrap(newTheme.typography.body2 as? TypographyFontTokenGeneratedMock, "Couldn't unwrap expectedFont")
-        XCTAssertIdentical(viewModel.textFont as? TypographyFontTokenGeneratedMock, expectedFont, "Wrong textFont")
-
-        XCTAssertEqual(viewModel.buttonIntent, expectedButtonIntent, "Wrong button intent")
-        XCTAssertEqual(viewModel.buttonVariant, expectedButtonVariant, "Wrong button variant")
-
-        XCTAssertEqual(viewModel.cornerRadius, newTheme.border.radius.medium, "Wrong cornerRadius")
-
-        // THEN - UseCases
-        XCTAssertEqual(getColorsUseCaseMock.executeWithColorsAndIntentAndVariantCallsCount, 1, "getColorsUseCaseMock.executeWithColorsAndIntentAndVariant should have been called once")
-        let getColorsUseCaseReceivedArguments = try XCTUnwrap(
-            getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReceivedArguments,
-            "Couldn't unwrap getColorsUseCaseReceivedArguments"
+        SnackbarGetBorderUseCaseableMockTest.expect(
+            stub.getBorderUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenTheme: newTheme,
+            expectedReturnValue: stub.expectedBorder
         )
-        let getColorsUseCaseReceivedArgumentsColors = try XCTUnwrap(getColorsUseCaseReceivedArguments.colors as? ColorsGeneratedMock, "Couldn't unwrap getColorsUseCaseReceivedArgumentsColors")
-        XCTAssertIdentical(getColorsUseCaseReceivedArgumentsColors, newTheme.colors as? ColorsGeneratedMock, "Wrong received getColorsUseCase.colors")
-        XCTAssertEqual(getColorsUseCaseReceivedArguments.intent, expectedIntent, "Wrong received getColorsUseCase.intent")
-        XCTAssertEqual(getColorsUseCaseReceivedArguments.variant, expectedVariant, "Wrong received getColorsUseCase.variant")
 
-        XCTAssertEqual(getButtonTypeUseCaseMock.executeWithIntentAndVariantCallsCount, 1, "getButtonTypeUseCaseMock.executeWithIntentAndVariant should have been called once")
-        let getButtonTypeUseCaseReceivedArguments = try XCTUnwrap(
-            getButtonTypeUseCaseMock.executeWithIntentAndVariantReceivedArguments,
-            "Couldn't unwrap getButtonTypeUseCaseReceivedArguments"
+        SnackbarGetColorsUseCaseableMockTest.expect(
+            stub.getColorsUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenTheme: newTheme,
+            givenIntent: stub.givenIntent,
+            expectedReturnValue: stub.expectedColors
         )
-        XCTAssertEqual(getButtonTypeUseCaseReceivedArguments.intent, expectedIntent, "Wrong received getButtonTypeUseCase.intent")
-        XCTAssertEqual(getButtonTypeUseCaseReceivedArguments.variant, expectedVariant, "Wrong received getButtonTypeUseCase.variant")
 
-        // THEN - Publishers
-        XCTAssertEqual(self.publishers.backgroundColor.sinkCount, 1, "$backgroundColor should have been called once")
-        XCTAssertEqual(self.publishers.foregroundColor.sinkCount, 1, "$foregroundColor should have been called once")
-        XCTAssertEqual(self.publishers.textFont.sinkCount, 1, "$textFont should have been called once")
-        XCTAssertEqual(self.publishers.buttonIntent.sinkCount, 1, "$buttonIntent should have been called once")
-        XCTAssertEqual(self.publishers.buttonVariant.sinkCount, 1, "$buttonVariant should have been called once")
-        XCTAssertEqual(self.publishers.cornerRadius.sinkCount, 1, "$cornerRadius should have been called once")
+        SnackbarGetLayoutUseCaseableMockTest.expect(
+            stub.getLayoutUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenTheme: newTheme,
+            expectedReturnValue: stub.expectedLayout
+        )
+
+        SnackbarGetTypographiesUseCaseableMockTest.expect(
+            stub.getTypographiesUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenTheme: newTheme,
+            expectedReturnValue: stub.expectedTypographies
+        )
+
+        expectNotCalled(
+            on: stub,
+            getIntentsUseCase: true
+        )
     }
 
-    func test_didSet_intent() throws {
+    @Test("Intent when changed should call colors and intents use cases")
+    func intentWhenChangedShouldCallColorsUseCase() {
         // GIVEN
-        let expectedBackgroundColor = ColorTokenGeneratedMock.blue()
-        let expectedForegroundColor = ColorTokenGeneratedMock.red()
-        let getColorsUseCaseMock = SnackbarGetColorsUseCasableGeneratedMock()
-        getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReturnValue = .init(
-            background: expectedBackgroundColor,
-            foreground: expectedForegroundColor
-        )
+        let stub = Stub()
+        let viewModel = stub.viewModel
+        viewModel.setup(stub: stub)
 
-        let expectedButtonIntent = ButtonIntent.accent
-        let expectedButtonVariant = ButtonVariant.outlined
-        let getButtonTypeUseCaseMock = SnackbarGetButtonTypeUseCasableGeneratedMock()
-        getButtonTypeUseCaseMock.executeWithIntentAndVariantReturnValue = .init(
-            intent: expectedButtonIntent,
-            variant: expectedButtonVariant
-        )
-
-        let oldIntent = SnackbarIntent.support
-        let expectedVariant = SnackbarVariant.tinted
-
-        let viewModel = SnackbarViewModel(
-            theme: self.theme,
-            variant: expectedVariant,
-            intent: oldIntent,
-            getColorsUseCase: getColorsUseCaseMock,
-            getButtonTypeUseCase: getButtonTypeUseCaseMock
-        )
-        self.setupPublishers(viewModel: viewModel)
-
-        self.publishers.reset()
-        getColorsUseCaseMock.reset()
-        getButtonTypeUseCaseMock.reset()
-
-        let newIntent = SnackbarIntent.error
+        stub.resetMockedData()
 
         // WHEN
-        viewModel.intent = newIntent
+        viewModel.intent = .success
 
-        // THEN - Values
-        XCTAssertEqual(viewModel.intent, newIntent, "Wrong intent")
-        XCTAssertEqual(viewModel.variant, expectedVariant, "Wrong variant")
+        // THEN
+        expectEqualToExpected(on: stub)
 
-        XCTAssertTrue(viewModel.backgroundColor.equals(expectedBackgroundColor), "Wrong background color")
-        XCTAssertTrue(viewModel.foregroundColor.equals(expectedForegroundColor), "Wrong foreground color")
-
-        XCTAssertEqual(viewModel.buttonIntent, expectedButtonIntent, "Wrong button intent")
-        XCTAssertEqual(viewModel.buttonVariant, expectedButtonVariant, "Wrong button variant")
-
-        // THEN - UseCases
-        XCTAssertEqual(getColorsUseCaseMock.executeWithColorsAndIntentAndVariantCallsCount, 1, "getColorsUseCaseMock.executeWithColorsAndIntentAndVariant should have been called once")
-        let getColorsUseCaseReceivedArguments = try XCTUnwrap(
-            getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReceivedArguments,
-            "Couldn't unwrap getColorsUseCaseReceivedArguments"
+        SnackbarGetColorsUseCaseableMockTest.expect(
+            stub.getColorsUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenTheme: stub.givenTheme,
+            givenIntent: .success,
+            expectedReturnValue: stub.expectedColors
         )
-        let getColorsUseCaseReceivedArgumentsColors = try XCTUnwrap(getColorsUseCaseReceivedArguments.colors as? ColorsGeneratedMock, "Couldn't unwrap getColorsUseCaseReceivedArgumentsColors")
-        XCTAssertIdentical(getColorsUseCaseReceivedArgumentsColors, self.theme.colors as? ColorsGeneratedMock, "Wrong received getColorsUseCase.colors")
-        XCTAssertEqual(getColorsUseCaseReceivedArguments.intent, newIntent, "Wrong received getColorsUseCase.intent")
-        XCTAssertEqual(getColorsUseCaseReceivedArguments.variant, expectedVariant, "Wrong received getColorsUseCase.variant")
 
-        XCTAssertEqual(getButtonTypeUseCaseMock.executeWithIntentAndVariantCallsCount, 1, "getButtonTypeUseCaseMock.executeWithIntentAndVariant should have been called once")
-        let getButtonTypeUseCaseReceivedArguments = try XCTUnwrap(
-            getButtonTypeUseCaseMock.executeWithIntentAndVariantReceivedArguments,
-            "Couldn't unwrap getButtonTypeUseCaseReceivedArguments"
+        SnackbarGetIntentsUseCaseableMockTest.expect(
+            stub.getIntentsUseCaseMock,
+            expectedNumberOfCalls: 1,
+            givenIntent: .success,
+            expectedReturnValue: stub.expectedIntents
         )
-        XCTAssertEqual(getButtonTypeUseCaseReceivedArguments.intent, newIntent, "Wrong received getButtonTypeUseCase.intent")
-        XCTAssertEqual(getButtonTypeUseCaseReceivedArguments.variant, expectedVariant, "Wrong received getButtonTypeUseCase.variant")
 
-        // THEN - Publishers
-        XCTAssertEqual(self.publishers.backgroundColor.sinkCount, 1, "$backgroundColor should have been called once")
-        XCTAssertEqual(self.publishers.foregroundColor.sinkCount, 1, "$foregroundColor should have been called once")
-        XCTAssertFalse(self.publishers.textFont.sinkCalled, "$textFont should not have been called once")
-        XCTAssertEqual(self.publishers.buttonIntent.sinkCount, 1, "$buttonIntent should have been called once")
-        XCTAssertEqual(self.publishers.buttonVariant.sinkCount, 1, "$buttonVariant should have been called once")
-        XCTAssertFalse(self.publishers.cornerRadius.sinkCalled, "$cornerRadius should not have been called once")
+        expectNotCalled(
+            on: stub,
+            getBorderUseCase: true,
+            getLayoutUseCase: true,
+            getTypographiesUseCase: true
+        )
     }
 
-    func test_didSet_intent_equal() throws {
+    // MARK: - Properties Changed Before Setup
+
+    @Test("Properties changed before setup should not call use cases")
+    func propertiesChangedBeforeSetupShouldNotCallUseCases() {
         // GIVEN
-        let expectedBackgroundColor = ColorTokenGeneratedMock.blue()
-        let expectedForegroundColor = ColorTokenGeneratedMock.red()
-        let getColorsUseCaseMock = SnackbarGetColorsUseCasableGeneratedMock()
-        getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReturnValue = .init(
-            background: expectedBackgroundColor,
-            foreground: expectedForegroundColor
-        )
-
-        let expectedButtonIntent = ButtonIntent.accent
-        let expectedButtonVariant = ButtonVariant.outlined
-        let getButtonTypeUseCaseMock = SnackbarGetButtonTypeUseCasableGeneratedMock()
-        getButtonTypeUseCaseMock.executeWithIntentAndVariantReturnValue = .init(
-            intent: expectedButtonIntent,
-            variant: expectedButtonVariant
-        )
-
-        let intent = SnackbarIntent.support
-
-        let viewModel = SnackbarViewModel(
-            theme: self.theme,
-            variant: .tinted,
-            intent: intent,
-            getColorsUseCase: getColorsUseCaseMock,
-            getButtonTypeUseCase: getButtonTypeUseCaseMock
-        )
-        self.setupPublishers(viewModel: viewModel)
-
-        self.publishers.reset()
-        getColorsUseCaseMock.reset()
-        getButtonTypeUseCaseMock.reset()
+        let stub = Stub()
+        let viewModel = stub.viewModel
 
         // WHEN
-        viewModel.intent = intent
+        viewModel.theme = ThemeGeneratedMock.mocked()
+        viewModel.intent = .alert
 
-        // THEN - UseCases
-        XCTAssertFalse(getColorsUseCaseMock.executeWithColorsAndIntentAndVariantCalled, "getColorsUseCaseMock.executeWithColorsAndIntentAndVariant should not have been called")
-        XCTAssertFalse(getButtonTypeUseCaseMock.executeWithIntentAndVariantCalled, "getButtonTypeUseCaseMock.executeWithIntentAndVariant should not have been called")
+        // THEN
+        expectEqualToExpected(
+            on: stub,
+            otherBorder: SnackbarBorder(),
+            otherColors: SnackbarColors(),
+            otherIntents: SnackbarIntents(),
+            otherLayout: SnackbarLayout(),
+            otherTypographies: SnackbarTypographies()
+        )
 
-        // THEN - Publishers
-        XCTAssertFalse(self.publishers.backgroundColor.sinkCalled, "$backgroundColor should not have been called")
-        XCTAssertFalse(self.publishers.foregroundColor.sinkCalled, "$foregroundColor should not have been called")
-        XCTAssertFalse(self.publishers.textFont.sinkCalled, "$textFont should not have been called once")
-        XCTAssertFalse(self.publishers.buttonIntent.sinkCalled, "$buttonIntent should not have been called")
-        XCTAssertFalse(self.publishers.buttonVariant.sinkCalled, "$buttonVariant should not have been called")
-        XCTAssertFalse(self.publishers.cornerRadius.sinkCalled, "$cornerRadius should not have been called once")
+        expectNotCalled(
+            on: stub,
+            getBorderUseCase: true,
+            getColorsUseCase: true,
+            getIntentsUseCase: true,
+            getLayoutUseCase: true,
+            getTypographiesUseCase: true
+        )
     }
 
-    func test_didSet_variant() throws {
+    @Test("Properties changed without value change should not call use cases")
+    func propertiesChangedWithoutValueChangeShouldNotCallUseCases() {
         // GIVEN
-        let expectedBackgroundColor = ColorTokenGeneratedMock.blue()
-        let expectedForegroundColor = ColorTokenGeneratedMock.red()
-        let getColorsUseCaseMock = SnackbarGetColorsUseCasableGeneratedMock()
-        getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReturnValue = .init(
-            background: expectedBackgroundColor,
-            foreground: expectedForegroundColor
-        )
+        let stub = Stub()
+        let viewModel = stub.viewModel
 
-        let expectedButtonIntent = ButtonIntent.accent
-        let expectedButtonVariant = ButtonVariant.outlined
-        let getButtonTypeUseCaseMock = SnackbarGetButtonTypeUseCasableGeneratedMock()
-        getButtonTypeUseCaseMock.executeWithIntentAndVariantReturnValue = .init(
-            intent: expectedButtonIntent,
-            variant: expectedButtonVariant
-        )
-
-        let expectedIntent = SnackbarIntent.support
-        let oldVariant = SnackbarVariant.tinted
-
-        let viewModel = SnackbarViewModel(
-            theme: self.theme,
-            variant: oldVariant,
-            intent: expectedIntent,
-            getColorsUseCase: getColorsUseCaseMock,
-            getButtonTypeUseCase: getButtonTypeUseCaseMock
-        )
-        self.setupPublishers(viewModel: viewModel)
-
-        self.publishers.reset()
-        getColorsUseCaseMock.reset()
-        getButtonTypeUseCaseMock.reset()
-
-        let newVariant = SnackbarVariant.filled
+        viewModel.setup(stub: stub)
+        stub.resetMockedData()
 
         // WHEN
-        viewModel.variant = newVariant
+        viewModel.theme = stub.givenTheme
+        viewModel.intent = stub.givenIntent
 
-        // THEN - Values
-        XCTAssertEqual(viewModel.intent, expectedIntent, "Wrong intent")
-        XCTAssertEqual(viewModel.variant, newVariant, "Wrong variant")
+        // THEN
+        expectEqualToExpected(on: stub)
 
-        XCTAssertTrue(viewModel.backgroundColor.equals(expectedBackgroundColor), "Wrong background color")
-        XCTAssertTrue(viewModel.foregroundColor.equals(expectedForegroundColor), "Wrong foreground color")
-
-        XCTAssertEqual(viewModel.buttonIntent, expectedButtonIntent, "Wrong button intent")
-        XCTAssertEqual(viewModel.buttonVariant, expectedButtonVariant, "Wrong button variant")
-
-        // THEN - UseCases
-        XCTAssertEqual(getColorsUseCaseMock.executeWithColorsAndIntentAndVariantCallsCount, 1, "getColorsUseCaseMock.executeWithColorsAndIntentAndVariant should have been called once")
-        let getColorsUseCaseReceivedArguments = try XCTUnwrap(
-            getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReceivedArguments,
-            "Couldn't unwrap getColorsUseCaseReceivedArguments"
+        expectNotCalled(
+            on: stub,
+            getBorderUseCase: true,
+            getColorsUseCase: true,
+            getIntentsUseCase: true,
+            getLayoutUseCase: true,
+            getTypographiesUseCase: true
         )
-        let getColorsUseCaseReceivedArgumentsColors = try XCTUnwrap(getColorsUseCaseReceivedArguments.colors as? ColorsGeneratedMock, "Couldn't unwrap getColorsUseCaseReceivedArgumentsColors")
-        XCTAssertIdentical(getColorsUseCaseReceivedArgumentsColors, self.theme.colors as? ColorsGeneratedMock, "Wrong received getColorsUseCase.colors")
-        XCTAssertEqual(getColorsUseCaseReceivedArguments.intent, expectedIntent, "Wrong received getColorsUseCase.intent")
-        XCTAssertEqual(getColorsUseCaseReceivedArguments.variant, newVariant, "Wrong received getColorsUseCase.variant")
-
-        XCTAssertEqual(getButtonTypeUseCaseMock.executeWithIntentAndVariantCallsCount, 1, "getButtonTypeUseCaseMock.executeWithIntentAndVariant should have been called once")
-        let getButtonTypeUseCaseReceivedArguments = try XCTUnwrap(
-            getButtonTypeUseCaseMock.executeWithIntentAndVariantReceivedArguments,
-            "Couldn't unwrap getButtonTypeUseCaseReceivedArguments"
-        )
-        XCTAssertEqual(getButtonTypeUseCaseReceivedArguments.intent, expectedIntent, "Wrong received getButtonTypeUseCase.intent")
-        XCTAssertEqual(getButtonTypeUseCaseReceivedArguments.variant, newVariant, "Wrong received getButtonTypeUseCase.variant")
-
-        // THEN - Publishers
-        XCTAssertEqual(self.publishers.backgroundColor.sinkCount, 1, "$backgroundColor should have been called once")
-        XCTAssertEqual(self.publishers.foregroundColor.sinkCount, 1, "$foregroundColor should have been called once")
-        XCTAssertFalse(self.publishers.textFont.sinkCalled, "$textFont should not have been called once")
-        XCTAssertEqual(self.publishers.buttonIntent.sinkCount, 1, "$buttonIntent should have been called once")
-        XCTAssertEqual(self.publishers.buttonVariant.sinkCount, 1, "$buttonVariant should have been called once")
-        XCTAssertFalse(self.publishers.cornerRadius.sinkCalled, "$cornerRadius should not have been called once")
     }
 
-    func test_didSet_variant_equal() throws {
+    @Test("Properties changed with nil values should not call use cases")
+    func propertiesChangedWithNilValuesShouldNotCallUseCases() {
         // GIVEN
-        let expectedBackgroundColor = ColorTokenGeneratedMock.blue()
-        let expectedForegroundColor = ColorTokenGeneratedMock.red()
-        let getColorsUseCaseMock = SnackbarGetColorsUseCasableGeneratedMock()
-        getColorsUseCaseMock.executeWithColorsAndIntentAndVariantReturnValue = .init(
-            background: expectedBackgroundColor,
-            foreground: expectedForegroundColor
-        )
+        let stub = Stub()
+        let viewModel = stub.viewModel
 
-        let expectedButtonIntent = ButtonIntent.accent
-        let expectedButtonVariant = ButtonVariant.outlined
-        let getButtonTypeUseCaseMock = SnackbarGetButtonTypeUseCasableGeneratedMock()
-        getButtonTypeUseCaseMock.executeWithIntentAndVariantReturnValue = .init(
-            intent: expectedButtonIntent,
-            variant: expectedButtonVariant
-        )
-
-        let variant = SnackbarVariant.tinted
-
-        let viewModel = SnackbarViewModel(
-            theme: self.theme,
-            variant: variant,
-            intent: .accent,
-            getColorsUseCase: getColorsUseCaseMock,
-            getButtonTypeUseCase: getButtonTypeUseCaseMock
-        )
-        self.setupPublishers(viewModel: viewModel)
-
-        self.publishers.reset()
-        getColorsUseCaseMock.reset()
-        getButtonTypeUseCaseMock.reset()
+        viewModel.setup(stub: stub)
+        stub.resetMockedData()
 
         // WHEN
-        viewModel.variant = variant
+        viewModel.theme = nil
+        viewModel.intent = nil
 
-        // THEN - UseCases
-        XCTAssertFalse(getColorsUseCaseMock.executeWithColorsAndIntentAndVariantCalled, "getColorsUseCaseMock.executeWithColorsAndIntentAndVariant should not have been called")
-        XCTAssertFalse(getButtonTypeUseCaseMock.executeWithIntentAndVariantCalled, "getButtonTypeUseCaseMock.executeWithIntentAndVariant should not have been called")
+        // THEN
+        expectEqualToExpected(on: stub)
 
-        // THEN - Publishers
-        XCTAssertFalse(self.publishers.backgroundColor.sinkCalled, "$backgroundColor should not have been called")
-        XCTAssertFalse(self.publishers.foregroundColor.sinkCalled, "$foregroundColor should not have been called")
-        XCTAssertFalse(self.publishers.textFont.sinkCalled, "$textFont should not have been called once")
-        XCTAssertFalse(self.publishers.buttonIntent.sinkCalled, "$buttonIntent should not have been called")
-        XCTAssertFalse(self.publishers.buttonVariant.sinkCalled, "$buttonVariant should not have been called")
-        XCTAssertFalse(self.publishers.cornerRadius.sinkCalled, "$cornerRadius should not have been called once")
+        expectNotCalled(
+            on: stub,
+            getBorderUseCase: true,
+            getColorsUseCase: true,
+            getIntentsUseCase: true,
+            getLayoutUseCase: true,
+            getTypographiesUseCase: true
+        )
     }
 }
 
-final class SnackbarPublishers {
-    var cancellables = Set<AnyCancellable>()
+// MARK: - Stub
 
-    var backgroundColor: PublisherMock<Published<any ColorToken>.Publisher>
-    var foregroundColor: PublisherMock<Published<any ColorToken>.Publisher>
-    var textFont: PublisherMock<Published<any TypographyFontToken>.Publisher>
-    var buttonIntent: PublisherMock<Published<ButtonIntent>.Publisher>
-    var buttonVariant: PublisherMock<Published<ButtonVariant>.Publisher>
-    var cornerRadius: PublisherMock<Published<CGFloat>.Publisher>
+private final class Stub {
 
-    init(
-        cancellables: Set<AnyCancellable> = Set<AnyCancellable>(),
-        backgroundColor: PublisherMock<Published<any ColorToken>.Publisher>,
-        foregroundColor: PublisherMock<Published<any ColorToken>.Publisher>,
-        textFont: PublisherMock<Published<any TypographyFontToken>.Publisher>,
-        buttonIntent: PublisherMock<Published<ButtonIntent>.Publisher>,
-        buttonVariant: PublisherMock<Published<ButtonVariant>.Publisher>,
-        cornerRadius: PublisherMock<Published<CGFloat>.Publisher>
-    ) {
-        self.cancellables = cancellables
-        self.backgroundColor = backgroundColor
-        self.foregroundColor = foregroundColor
-        self.textFont = textFont
-        self.buttonIntent = buttonIntent
-        self.buttonVariant = buttonVariant
-        self.cornerRadius = cornerRadius
+    // MARK: - Properties
+
+    let givenTheme = ThemeGeneratedMock.mocked()
+    let givenIntent: SnackbarIntent = .info
+
+    let expectedBorder = SnackbarBorder(width: 1, radius: 16)
+    let expectedColors = SnackbarColors(
+        tintColorToken: ColorTokenGeneratedMock.random(),
+        backgroundColorToken: ColorTokenGeneratedMock.green(),
+        borderColorToken: ColorTokenGeneratedMock.random()
+    )
+    let expectedIntents = SnackbarIntents(button: .support)
+    let expectedLayout = SnackbarLayout(
+        leadingPadding: 16,
+        trailingPadding: 12,
+        horizontalSpacing: 12,
+        verticalPadding: 12,
+        verticalSpacing: 12,
+        verticalSubSpacing: 8
+    )
+    let expectedTypographies = SnackbarTypographies(
+        titleFontToken: TypographyFontTokenGeneratedMock.body(),
+        descriptionFontToken: TypographyFontTokenGeneratedMock.footnote()
+    )
+
+    // MARK: - Use Case Mocks
+
+    let getBorderUseCaseMock: SnackbarGetBorderUseCaseableGeneratedMock
+    let getColorsUseCaseMock: SnackbarGetColorsUseCaseableGeneratedMock
+    let getIntentsUseCaseMock: SnackbarGetIntentsUseCaseableGeneratedMock
+    let getLayoutUseCaseMock: SnackbarGetLayoutUseCaseableGeneratedMock
+    let getTypographiesUseCaseMock: SnackbarGetTypographiesUseCaseableGeneratedMock
+
+    // MARK: - ViewModel
+
+    let viewModel: SnackbarViewModel
+
+    // MARK: - Initialization
+
+    init() {
+        let getBorderUseCaseMock = SnackbarGetBorderUseCaseableGeneratedMock()
+        getBorderUseCaseMock.executeWithThemeReturnValue = self.expectedBorder
+
+        let getColorsUseCaseMock = SnackbarGetColorsUseCaseableGeneratedMock()
+        getColorsUseCaseMock.executeWithThemeAndIntentReturnValue = self.expectedColors
+
+        let getIntentsUseCaseMock = SnackbarGetIntentsUseCaseableGeneratedMock()
+        getIntentsUseCaseMock.executeWithIntentReturnValue = self.expectedIntents
+
+        let getLayoutUseCaseMock = SnackbarGetLayoutUseCaseableGeneratedMock()
+        getLayoutUseCaseMock.executeWithThemeReturnValue = self.expectedLayout
+
+        let getTypographiesUseCaseMock = SnackbarGetTypographiesUseCaseableGeneratedMock()
+        getTypographiesUseCaseMock.executeWithThemeReturnValue = self.expectedTypographies
+
+        self.viewModel = SnackbarViewModel(
+            getBorderUseCase: getBorderUseCaseMock,
+            getColorsUseCase: getColorsUseCaseMock,
+            getIntentsUseCase: getIntentsUseCaseMock,
+            getLayoutUseCase: getLayoutUseCaseMock,
+            getTypographiesUseCase: getTypographiesUseCaseMock
+        )
+
+        self.getBorderUseCaseMock = getBorderUseCaseMock
+        self.getColorsUseCaseMock = getColorsUseCaseMock
+        self.getIntentsUseCaseMock = getIntentsUseCaseMock
+        self.getLayoutUseCaseMock = getLayoutUseCaseMock
+        self.getTypographiesUseCaseMock = getTypographiesUseCaseMock
     }
 
-    func load() {
-        self.cancellables = Set<AnyCancellable>()
+    // MARK: - Methods
 
-        self.foregroundColor.loadTesting(on: &self.cancellables)
-        self.backgroundColor.loadTesting(on: &self.cancellables)
-        self.textFont.loadTesting(on: &self.cancellables)
-        self.buttonIntent.loadTesting(on: &self.cancellables)
-        self.buttonVariant.loadTesting(on: &self.cancellables)
-        self.cornerRadius.loadTesting(on: &self.cancellables)
+    func resetMockedData() {
+        self.getBorderUseCaseMock.reset()
+        self.getColorsUseCaseMock.reset()
+        self.getIntentsUseCaseMock.reset()
+        self.getLayoutUseCaseMock.reset()
+        self.getTypographiesUseCaseMock.reset()
     }
+}
 
-    func reset() {
-        self.foregroundColor.reset()
-        self.backgroundColor.reset()
-        self.textFont.reset()
-        self.buttonIntent.reset()
-        self.buttonVariant.reset()
-        self.cornerRadius.reset()
+// MARK: - Extension
+
+private extension SnackbarViewModel {
+
+    func setup(stub: Stub) {
+        self.setup(
+            theme: stub.givenTheme,
+            intent: stub.givenIntent
+        )
     }
+}
+
+// MARK: - Expectations
+
+private func expectNotCalled(
+    on stub: Stub,
+    getBorderUseCase: Bool = false,
+    getColorsUseCase: Bool = false,
+    getIntentsUseCase: Bool = false,
+    getLayoutUseCase: Bool = false,
+    getTypographiesUseCase: Bool = false,
+    sourceLocation: Testing.SourceLocation = #_sourceLocation
+) {
+    SnackbarGetBorderUseCaseableMockTest.expectCalled(
+        stub.getBorderUseCaseMock,
+        executeWithThemeCalled: !getBorderUseCase,
+        sourceLocation: sourceLocation
+    )
+
+    SnackbarGetColorsUseCaseableMockTest.expectCalled(
+        stub.getColorsUseCaseMock,
+        executeWithThemeAndIntentCalled: !getColorsUseCase,
+        sourceLocation: sourceLocation
+    )
+
+    SnackbarGetIntentsUseCaseableMockTest.expectCalled(
+        stub.getIntentsUseCaseMock,
+        executeWithIntentCalled: !getIntentsUseCase,
+        sourceLocation: sourceLocation
+    )
+
+    SnackbarGetLayoutUseCaseableMockTest.expectCalled(
+        stub.getLayoutUseCaseMock,
+        executeWithThemeCalled: !getLayoutUseCase,
+        sourceLocation: sourceLocation
+    )
+
+    SnackbarGetTypographiesUseCaseableMockTest.expectCalled(
+        stub.getTypographiesUseCaseMock,
+        executeWithThemeCalled: !getTypographiesUseCase,
+        sourceLocation: sourceLocation
+    )
+}
+
+private func expectEqualToExpected(
+    on stub: Stub,
+    otherBorder: SnackbarBorder? = nil,
+    otherColors: SnackbarColors? = nil,
+    otherIntents: SnackbarIntents? = nil,
+    otherLayout: SnackbarLayout? = nil,
+    otherTypographies: SnackbarTypographies? = nil,
+    sourceLocation: Testing.SourceLocation = #_sourceLocation
+) {
+    let viewModel = stub.viewModel
+
+    let expectedBorder = otherBorder ?? stub.expectedBorder
+    let expectedColors = otherColors ?? stub.expectedColors
+    let expectedIntents = otherIntents ?? stub.expectedIntents
+    let expectedLayout = otherLayout ?? stub.expectedLayout
+    let expectedTypographies = otherTypographies ?? stub.expectedTypographies
+
+    #expect(
+        viewModel.border == expectedBorder,
+        "Wrong border value",
+        sourceLocation: sourceLocation
+    )
+
+    #expect(
+        viewModel.colors == expectedColors,
+        "Wrong colors value",
+        sourceLocation: sourceLocation
+    )
+
+    #expect(
+        viewModel.intents == expectedIntents,
+        "Wrong intents value",
+        sourceLocation: sourceLocation
+    )
+
+    #expect(
+        viewModel.layout == expectedLayout,
+        "Wrong layout value",
+        sourceLocation: sourceLocation
+    )
+
+    #expect(
+        viewModel.typographies == expectedTypographies,
+        "Wrong typographies value",
+        sourceLocation: sourceLocation
+    )
 }

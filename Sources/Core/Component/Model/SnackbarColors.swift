@@ -2,28 +2,29 @@
 //  SnackbarColors.swift
 //  SparkComponentSnackbar
 //
-//  Created by louis.borlee on 03/09/2024.
-//  Copyright © 2024 Leboncoin. All rights reserved.
+//  Created by robin.lemaire on 12/05/2026.
+//  Copyright © 2026 Leboncoin. All rights reserved.
 //
 
-import SparkTheming
+import Foundation
+@_spi(SI_SPI) import SparkTheming
 
-/// Snackbar colors
-public struct SnackbarColors {
-    /// Snackbar background color
-    let background: any ColorToken
-    /// Snackbar foreground color
-    let foreground: any ColorToken
+struct SnackbarColors: Equatable {
 
-    /// Snackbar init
-    /// - Parameters:
-    ///   - background: Snackbar background color
-    ///   - foreground: Snackbar foreground color
-    public init(
-        background: any ColorToken,
-        foreground: any ColorToken
-    ) {
-        self.background = background
-        self.foreground = foreground
+    // MARK: - Properties
+
+    var tintColorToken: any ColorToken = ColorTokenClear()
+    var backgroundColorToken: any ColorToken = ColorTokenClear()
+    var borderColorToken: any ColorToken = ColorTokenClear()
+}
+
+// MARK: Hashable & Equatable
+
+extension SnackbarColors {
+
+    static func == (lhs: SnackbarColors, rhs: SnackbarColors) -> Bool {
+        return lhs.tintColorToken.equals(rhs.tintColorToken) &&
+        lhs.backgroundColorToken.equals(rhs.backgroundColorToken) &&
+        lhs.borderColorToken.equals(rhs.borderColorToken)
     }
 }
