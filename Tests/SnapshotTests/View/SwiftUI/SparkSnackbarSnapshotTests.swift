@@ -1,5 +1,5 @@
 //
-//  SparkSnackbarSnapshotTests.swift
+//  SnackbarSnapshotTests.swift
 //  SparkComponentSnackbarSnapshotTests
 //
 //  Created by robin.lemaire on 18/05/2026.
@@ -17,7 +17,7 @@ import SparkTheming
 import SparkTheme
 import SparkComponentButton
 
-final class SparkSnackbarSnapshotTests: SwiftUIComponentSnapshotTestCase {
+final class SnackbarSnapshotTests: SwiftUIComponentSnapshotTestCase {
 
     // MARK: - Properties
 
@@ -60,23 +60,29 @@ final class SparkSnackbarSnapshotTests: SwiftUIComponentSnapshotTestCase {
         switch (configuration.titleContent, configuration.descriptionContent) {
         case (.none, .text):
             if configuration.hasButton {
-                SparkSnackbar(
+                Snackbar(
                     icon,
+                    titleLabel: { EmptyView() },
                     descriptionLabel: { Text(String.mock) }
                 ) {
                     self.button()
                 }
             } else {
-                SparkSnackbar(
+                Snackbar(
                     icon,
-                    descriptionLabel: { Text(String.mock) }
+                    titleLabel: { EmptyView() },
+                    descriptionLabel: { Text(String.mock) },
+                    button: { EmptyView() }
                 )
             }
 
         case (.none, .label):
             if configuration.hasButton {
-                SparkSnackbar(
+                Snackbar(
                     icon,
+                    titleLabel: {
+                        EmptyView()
+                    },
                     descriptionLabel: {
                         CustomDescriptionView(text: String.mock)
                     }
@@ -84,36 +90,53 @@ final class SparkSnackbarSnapshotTests: SwiftUIComponentSnapshotTestCase {
                     self.button()
                 }
             } else {
-                SparkSnackbar(
+                Snackbar(
                     icon,
+                    titleLabel: {
+                        EmptyView()
+                    },
                     descriptionLabel: {
                         CustomDescriptionView(text: String.mock)
+                    },
+                    button: {
+                        EmptyView()
                     }
                 )
             }
 
         case (.text, .text):
             if configuration.hasButton {
-                SparkSnackbar(
+                Snackbar(
                     icon,
-                    title: String.mock,
-                    description: String.longMock
+                    titleLabel: {
+                        Text(String.mock)
+                    },
+                    descriptionLabel: {
+                        Text(String.longMock)
+                    }
                 ) {
                     self.button()
                 }
             } else {
-                SparkSnackbar(
+                Snackbar(
                     icon,
-                    title: String.mock,
-                    description: String.longMock
+                    titleLabel: {
+                        Text(String.mock)
+                    },
+                    descriptionLabel: {
+                        Text(String.longMock)
+                    },
+                    button: { EmptyView() }
                 )
             }
 
         case (.text, .label):
             if configuration.hasButton {
-                SparkSnackbar(
+                Snackbar(
                     icon,
-                    titleLabel: { Text(String.mock) },
+                    titleLabel: {
+                        Text(String.mock)
+                    },
                     descriptionLabel: {
                         CustomDescriptionView(text: String.longMock)
                     }
@@ -121,39 +144,47 @@ final class SparkSnackbarSnapshotTests: SwiftUIComponentSnapshotTestCase {
                     self.button()
                 }
             } else {
-                SparkSnackbar(
+                Snackbar(
                     icon,
-                    titleLabel: { Text(String.mock) },
+                    titleLabel: {
+                        Text(String.mock)
+                    },
                     descriptionLabel: {
                         CustomDescriptionView(text: String.longMock)
-                    }
+                    },
+                    button: { EmptyView() }
                 )
             }
 
         case (.label, .text):
             if configuration.hasButton {
-                SparkSnackbar(
+                Snackbar(
                     icon,
                     titleLabel: {
                         CustomTitleView(text: String.mock)
                     },
-                    descriptionLabel: { Text(String.longMock) }
+                    descriptionLabel: {
+                        Text(String.longMock)
+                    }
                 ) {
                     self.button()
                 }
             } else {
-                SparkSnackbar(
+                Snackbar(
                     icon,
                     titleLabel: {
                         CustomTitleView(text: String.mock)
                     },
-                    descriptionLabel: { Text(String.longMock) }
+                    descriptionLabel: {
+                        Text(String.longMock)
+                    },
+                    button: { EmptyView() }
                 )
             }
 
         case (.label, .label):
             if configuration.hasButton {
-                SparkSnackbar(
+                Snackbar(
                     icon,
                     titleLabel: {
                         CustomTitleView(text: String.mock)
@@ -165,14 +196,15 @@ final class SparkSnackbarSnapshotTests: SwiftUIComponentSnapshotTestCase {
                     self.button()
                 }
             } else {
-                SparkSnackbar(
+                Snackbar(
                     icon,
                     titleLabel: {
                         CustomTitleView(text: String.mock)
                     },
                     descriptionLabel: {
                         CustomDescriptionView(text: String.longMock)
-                    }
+                    },
+                    button: { EmptyView() }
                 )
             }
         }

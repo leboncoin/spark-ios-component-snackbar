@@ -26,7 +26,7 @@ public extension View {
         snackbar: @escaping () -> Snackbar
     ) -> some View {
         modifier(
-            SnackbarViewModifier(
+            SnackbarViewModifierDeprecated(
                 isPresented: isPresented,
                 direction: direction,
                 autoDismissDelay: autoDismissDelay,

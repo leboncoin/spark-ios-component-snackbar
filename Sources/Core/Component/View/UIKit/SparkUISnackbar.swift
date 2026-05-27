@@ -83,7 +83,7 @@ import SparkComponentButton
 ///
 /// ## Rendering
 ///
-/// ![Button rendering.](snackbar_full.png)
+/// ![Snackbar rendering.](snackbar_full.png)
 ///
 public final class SparkUISnackbar: UIView {
 
@@ -338,7 +338,7 @@ public final class SparkUISnackbar: UIView {
     ///
     /// ### Title
     ///
-    /// ![Button rendering.](snackbar_full.png)
+    /// ![Snackbar rendering.](snackbar_full.png)
     ///
     public init(theme: any Theme) {
         self.theme = theme

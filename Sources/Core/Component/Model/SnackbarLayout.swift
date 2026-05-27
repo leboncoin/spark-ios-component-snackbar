@@ -12,6 +12,9 @@ struct SnackbarLayout: Equatable {
 
     // MARK: - Properties
 
+    /// The padding applied to the presentation view
+    var presentationPadding: CGFloat = .zero
+
     /// The padding from the leading edge of the snackbar (left in LTR, right in RTL)
     var leadingPadding: CGFloat = .zero
 

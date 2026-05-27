@@ -23,6 +23,7 @@ struct SnackbarGetLayoutUseCase: SnackbarGetLayoutUseCaseable {
         let layout = theme.layout
 
         return SnackbarLayout(
+            presentationPadding: layout.spacing.large,
             leadingPadding: layout.spacing.large,
             trailingPadding: layout.spacing.medium,
             horizontalSpacing: layout.spacing.medium,

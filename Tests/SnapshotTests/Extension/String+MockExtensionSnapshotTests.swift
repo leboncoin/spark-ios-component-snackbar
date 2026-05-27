@@ -14,6 +14,6 @@ extension String {
     }
 
     static var longMock: Self {
-        "The description placeholder message pfaoije ioajzeofija opiezfjioaj efopijaz poefja zopifj azpoiefj oiazjf epoiajz feoiajzpo eija zoeifj apiozejf poaijef opiajz fepioazj pfoeijaz pfoiajpzoie"
+        "The description/message placeholder"
     }
 }

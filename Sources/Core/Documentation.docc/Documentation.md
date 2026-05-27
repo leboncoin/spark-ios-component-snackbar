@@ -8,7 +8,7 @@ Snackbars inform users of a process that an app has performed or will perform. T
 
 ### Implementation
 
-- On SwiftUI, you need to use the ``SparkSnackbar`` View with the `.snackbar` view modifier.
+- On SwiftUI, you need to use the ``sparkSnackbar`` View extension.
 - On UIKit, you need to use the ``SparkUISnackbar`` which can be presented modally.
 
 ### Rendering

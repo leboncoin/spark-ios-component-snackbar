@@ -26,12 +26,14 @@ struct SnackbarLayoutTests {
         #expect(layout.verticalPadding == .zero)
         #expect(layout.verticalSpacing == .zero)
         #expect(layout.verticalSubSpacing == .zero)
+        #expect(layout.presentationPadding == .zero)
     }
 
     @Test("Equality when same values")
     func equalityWhenSameValues() {
         // GIVEN / WHEN
         let layout1 = SnackbarLayout(
+            presentationPadding: 12,
             leadingPadding: 16,
             trailingPadding: 12,
             horizontalSpacing: 12,
@@ -40,6 +42,7 @@ struct SnackbarLayoutTests {
             verticalSubSpacing: 8
         )
         let layout2 = SnackbarLayout(
+            presentationPadding: 12,
             leadingPadding: 16,
             trailingPadding: 12,
             horizontalSpacing: 12,
@@ -107,6 +110,16 @@ struct SnackbarLayoutTests {
         // GIVEN / WHEN
         let layout1 = SnackbarLayout(verticalSubSpacing: 8)
         let layout2 = SnackbarLayout(verticalSubSpacing: 12)
+
+        // THEN
+        #expect(layout1 != layout2)
+    }
+
+    @Test("Inequality when different presentation padding")
+    func inequalityWhenDifferentPresentationPadding() {
+        // GIVEN / WHEN
+        let layout1 = SnackbarLayout(presentationPadding: 12)
+        let layout2 = SnackbarLayout(presentationPadding: 16)
 
         // THEN
         #expect(layout1 != layout2)

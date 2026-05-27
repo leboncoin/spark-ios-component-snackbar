@@ -1,5 +1,5 @@
 //
-//  SnackbarViewModifier.swift
+//  SnackbarViewModifierDeprecated.swift
 //  SparkComponentSnackbar
 //
 //  Created by louis.borlee on 08/11/2024.
@@ -9,7 +9,7 @@
 import SwiftUI
 
 @available(*, deprecated, message: "Replaced by SparkSnackbar")
-struct SnackbarViewModifier<Snackbar: View>: ViewModifier {
+struct SnackbarViewModifierDeprecated<Snackbar: View>: ViewModifier {
 
     @Binding private var isPresented: Bool
     @State private var currentTask: Task<Void, Never>?

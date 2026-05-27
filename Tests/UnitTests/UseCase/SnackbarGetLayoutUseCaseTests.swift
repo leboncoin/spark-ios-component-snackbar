@@ -34,6 +34,7 @@ struct SnackbarGetLayoutUseCaseTests {
         let layout = self.sut.execute(theme: self.theme)
 
         // THEN
+        #expect(layout.presentationPadding == self.theme.layout.spacing.large)
         #expect(layout.leadingPadding == self.theme.layout.spacing.large)
         #expect(layout.trailingPadding == self.theme.layout.spacing.medium)
         #expect(layout.horizontalSpacing == self.theme.layout.spacing.medium)
