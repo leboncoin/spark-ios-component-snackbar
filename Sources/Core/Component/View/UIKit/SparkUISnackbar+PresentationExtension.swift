@@ -67,6 +67,8 @@ extension SparkUISnackbar {
             useSafeAreaLayoutGuide: useSafeAreaLayoutGuide
         )
 
+        self.dismissCompletion = dismissCompletion
+
         self.queueDismiss(
             delay: autoDismissDelay.seconds,
             completion: dismissCompletion
@@ -75,7 +77,7 @@ extension SparkUISnackbar {
 
     /// This method dismisses the Snackbar.
     /// - Parameter completion: An optional closure to be called when the dismissal animation is complete.
-    public func dismiss(completion: ((Bool) -> Void)?) {
+    public func dismiss(completion: ((Bool) -> Void)? = nil) {
         self.autoDismissWorkItem?.cancel()
         UIView.optionalAnimate(
             withDuration: SnackbarConstants.presentationDuration,
@@ -87,7 +89,9 @@ extension SparkUISnackbar {
             },
             completion: { [weak self] isFinished in
                 guard let self else { return }
+
                 self.removeFromSuperview()
+                self.dismissCompletion?(isFinished)
                 completion?(isFinished)
             }
         )
@@ -167,7 +171,7 @@ extension SparkUISnackbar {
     ) {
         self.autoDismissWorkItem?.cancel()
         let workItem = DispatchWorkItem { [weak self] in
-            self?.dismiss(completion: completion)
+            self?.dismiss()
         }
         self.autoDismissWorkItem = workItem
         let duration = UIAccessibility.isReduceMotionEnabled ? .zero : SnackbarConstants.presentationDuration

@@ -96,7 +96,6 @@ public final class SparkUISnackbar: UIView {
         ])
         stackView.accessibilityAxis = .vertical
         stackView.accessibilityAlignment = .fill
-        stackView.isLayoutMarginsRelativeArrangement = true
         return stackView
     }()
 
@@ -137,7 +136,7 @@ public final class SparkUISnackbar: UIView {
     public let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.isHidden = true
         return imageView
     }()
 
@@ -283,6 +282,10 @@ public final class SparkUISnackbar: UIView {
 
     @ScaledUIMetric private var iconSize: CGFloat
 
+    private var contentStackViewLeadingConstraint: NSLayoutConstraint?
+    private var contentStackViewTopConstraint: NSLayoutConstraint?
+    private var contentStackViewTrailingConstraint: NSLayoutConstraint?
+
     private var iconWidthConstraint: NSLayoutConstraint?
 
     // MARK: - Initialization
@@ -405,10 +408,17 @@ public final class SparkUISnackbar: UIView {
     private func setupContentStackViewContraints() {
         self.contentStackView.translatesAutoresizingMaskIntoConstraints = false
 
-        NSLayoutConstraint.stickEdges(
-            from: self.contentStackView,
-            to: self
-        )
+        self.contentStackViewLeadingConstraint = self.contentStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor)
+        self.contentStackViewTopConstraint = self.contentStackView.topAnchor.constraint(equalTo: self.topAnchor)
+        let contentStackViewCenterXAnchor = self.contentStackView.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+        self.contentStackViewTrailingConstraint = self.contentStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+
+        NSLayoutConstraint.activate([
+            self.contentStackViewLeadingConstraint,
+            self.contentStackViewTopConstraint,
+            contentStackViewCenterXAnchor,
+            self.contentStackViewTrailingConstraint,
+        ].compactMap { $0 })
     }
 
     private func setupIconViewContraints() {
@@ -468,13 +478,10 @@ public final class SparkUISnackbar: UIView {
     }
 
     private func updateLayout() {
-        // Content Stack Insets
-        self.contentStackView.layoutMargins = .init(
-            top: self.viewModel.layout.verticalPadding,
-            left: self.viewModel.layout.leadingPadding,
-            bottom: self.viewModel.layout.verticalPadding,
-            right: self.viewModel.layout.trailingPadding
-        )
+        // Content Stack Constraints
+        self.contentStackViewLeadingConstraint?.constant = self.leadingPadding
+        self.contentStackViewTopConstraint?.constant = self.verticalPadding
+        self.contentStackViewTrailingConstraint?.constant = -self.trailingPadding
 
         // Content Stack Spacings
         switch self.alignment {
